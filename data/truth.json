@@ -1,0 +1,112 @@
+{
+  "is_synthetic": true,
+  "lender": "Harbor Credit",
+  "note": "SYNTHETIC ground-truth drivers for tests only. Never provide this file to the agent.",
+  "planted": {
+    "LN-1042": {
+      "facts": {
+        "declared_income": 72000,
+        "declared_income_above_policy_threshold": true,
+        "income_policy_threshold": 40000.0,
+        "late_of_last_6_over_15_days": 3,
+        "prior_loan_id": "LN-0900",
+        "utilisation": 91
+      },
+      "false_stories": [
+        "low_income",
+        "declared_income_below_threshold"
+      ],
+      "outcome": "decline",
+      "true_drivers": [
+        {
+          "detail": "3 of last 6 payments on prior loan over 15 days late",
+          "feature": "late_over_15_of_last_6",
+          "rule_id": "R04"
+        },
+        {
+          "detail": "utilisation 91 percent",
+          "feature": "utilisation",
+          "rule_id": "R02"
+        }
+      ]
+    },
+    "LN-1107": {
+      "facts": {
+        "defaults": 2,
+        "defaults_source": "bureau_only",
+        "repeat_borrower": true
+      },
+      "outcome": "approve",
+      "pricing": {
+        "defaults": 2,
+        "first_loan_id": "LN-0500",
+        "first_loan_rate": 8.0,
+        "rate_delta_points": 4.0,
+        "this_rate": 12.0
+      },
+      "true_drivers": [
+        {
+          "detail": "2 bureau defaults visible only via bureau API",
+          "feature": "defaults",
+          "rule_id": "R06"
+        }
+      ]
+    },
+    "LN-1230": {
+      "counterfactual": {
+        "amount_from": 110000.0,
+        "amount_to": 93500.0,
+        "change": "reduce amount by 15%",
+        "documented_flip": "15% amount reduction flips decline to approve (scorecard); search may find a smaller valid flip",
+        "flips_to": "approve"
+      },
+      "facts": {
+        "amount_to_income": 2.619047619047619,
+        "amount_to_income_debt_service": 2.5,
+        "approve_threshold": 150,
+        "declared_income": 42000.0,
+        "score": 137.0
+      },
+      "outcome": "decline",
+      "true_drivers": [
+        {
+          "detail": "borderline decline; reducing amount by 15% drops amount-to-income below debt-service band and flips to approve",
+          "feature": "amount_to_income",
+          "rule_id": "R08"
+        }
+      ]
+    },
+    "LN-1301": {
+      "agent_should_flag": "recorded reason not supported",
+      "facts": {
+        "bureau_score": 560,
+        "declared_income": 110000,
+        "declared_income_above_policy_threshold": true,
+        "enquiries_6m": 7
+      },
+      "outcome": "decline",
+      "recorded_reason_code": "INCOME_BELOW_THRESHOLD",
+      "recorded_reason_supported": false,
+      "true_drivers": [
+        {
+          "detail": "bureau score below floor",
+          "feature": "bureau_score",
+          "rule_id": "R10"
+        },
+        {
+          "detail": "six or more enquiries in six months",
+          "feature": "enquiries_6m",
+          "rule_id": "R13"
+        }
+      ]
+    }
+  },
+  "scorecard": {
+    "amount_to_income_debt_service": 2.5,
+    "approve_threshold": 150,
+    "base_rate_pct": 8.0,
+    "base_score": 200,
+    "income_low_threshold": 40000.0,
+    "rate_points_per_default": 2.0
+  }
+}

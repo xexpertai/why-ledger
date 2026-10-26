@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whyledger"
+version = "0.1.0"
+description = "Why-Ledger: evidence-backed credit decision explanations (Open Agent Hackathon 2026)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic",
+    "requests",
+    "fastapi",
+    "uvicorn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx",
+]
+live = [
+    "jaydebeapi",
+    "JPype1",
+]
+playwright = [
+    "playwright",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+whyledger = ["ui/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "live: integration tests against a running Zetaris (set ZETARIS_LIVE=jdbc)",
+]

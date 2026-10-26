@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Why-Ledger — Harbor Credit (SYNTHETIC)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/ui/app.css" />
+</head>
+<body>
+  <div id="api-offline" class="api-offline" hidden role="alert">
+    <p><strong>Cannot reach the Why-Ledger API.</strong></p>
+    <p>Start the server with <code>make run</code> and open <a href="http://localhost:8090">http://localhost:8090</a>.</p>
+    <p class="api-offline-hint">If you opened this page via <code>file://</code>, use the local server instead.</p>
+  </div>
+
+  <p id="replay-banner" role="status" aria-live="polite"></p>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Loan cases">
+      <div class="sidebar-brand">
+        <div class="sidebar-header-row">
+          <h1 class="sidebar-title">Why-Ledger</h1>
+          <button type="button" id="theme-toggle" class="theme-switch" aria-label="Toggle light theme" title="Toggle theme">
+            <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" fill="currentColor"/>
+              <g stroke="currentColor" stroke-width="2" fill="none">
+                <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+                <line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/>
+                <line x1="4.2" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.8" y2="4.2"/>
+              </g>
+            </svg>
+            <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path fill="currentColor" d="M14 2.5a9 9 0 1 0 9 9c0-1.2-.24-2.34-.68-3.38A7 7 0 0 1 14 2.5z"/>
+            </svg>
+          </button>
+        </div>
+        <p class="sidebar-tagline">Every loan decision, explained with verified evidence</p>
+        <p class="sidebar-lender">Harbor Credit — fictional lender (demo)</p>
+      </div>
+      <div class="sidebar-badges">
+        <span id="synthetic-badge" class="badge badge-warn">SYNTHETIC DATA</span>
+        <span id="mode-badge" class="badge badge-mode" data-mode="stub">STUB</span>
+      </div>
+      <nav class="loan-picks" aria-label="Planted loan picker">
+        <button type="button" class="loan-card" data-loan="LN-1042">
+          <span class="loan-card-id">LN-1042</span>
+          <span class="loan-card-meta"><span class="loan-card-applicant">AP-1042</span> · $95,000</span>
+          <span class="outcome-pill outcome-decline">decline</span>
+        </button>
+        <button type="button" class="loan-card" data-loan="LN-1107">
+          <span class="loan-card-id">LN-1107</span>
+          <span class="loan-card-meta"><span class="loan-card-applicant">AP-1107</span> · $80,000</span>
+          <span class="outcome-pill outcome-approve">approve</span>
+        </button>
+        <button type="button" class="loan-card" data-loan="LN-1230">
+          <span class="loan-card-id">LN-1230</span>
+          <span class="loan-card-meta"><span class="loan-card-applicant">AP-1230</span> · $110,000</span>
+          <span class="outcome-pill outcome-decline">decline</span>
+        </button>
+        <button type="button" class="loan-card" data-loan="LN-1301">
+          <span class="loan-card-id">LN-1301</span>
+          <span class="loan-card-meta"><span class="loan-card-applicant">AP-1301</span> · $100,000</span>
+          <span class="outcome-pill outcome-decline">decline</span>
+        </button>
+      </nav>
+    </aside>
+
+    <div class="main-column">
+      <main class="main-content">
+        <details id="run-settings" class="run-settings panel span-full" open>
+          <summary class="run-settings-summary">
+            <span class="run-settings-title">Run settings</span>
+            <span id="run-settings-hint" class="run-settings-hint">Choose source and question, then run</span>
+          </summary>
+          <div class="run-settings-body">
+            <fieldset class="source-row source-row-compact" aria-label="Replay source">
+              <label class="opt"><input type="radio" name="source" value="server" /> Server (live / stub / STUB replay)</label>
+              <label class="opt"><input type="radio" name="source" value="recorded_live" checked /> Recorded live (Zetaris JDBC + Nemotron via Meterless Nightshift)</label>
+              <label class="opt"><input type="radio" name="source" value="verifier_stress" /> Verifier stress test (planted claims)</label>
+            </fieldset>
+            <div id="recorded-live-sub" class="source-sub source-sub-compact" hidden>
+              <label class="opt" id="recorded-variant-nightshift-label"><input type="radio" name="recorded_variant" value="nightshift" checked /> Nightshift run (25 Oct, primary)</label>
+              <label class="opt"><input type="radio" name="recorded_variant" value="nvidia_direct" /> NVIDIA-direct (23 Oct)</label>
+            </div>
+            <div class="run-settings-actions">
+              <label for="question" class="run-q-label">Question or loan ID</label>
+              <textarea id="question" rows="1" placeholder="Explain why LN-1042 was declined…"></textarea>
+              <button type="button" id="ask-btn">Run explanation</button>
+            </div>
+            <p id="status" class="status-msg" aria-live="polite"></p>
+          </div>
+        </details>
+
+        <section id="stress-panel" class="panel span-full" hidden>
+          <h2>Verifier stress test (planted claims)</h2>
+          <p class="step-muted"><strong>PLANTED test claims, not model output.</strong> Fixed tampered claims run through the verifier against Zetaris (live JDBC or STUB).</p>
+          <p id="stress-meta" class="step-muted"></p>
+          <div id="stress-tiles" class="stress-tiles" hidden></div>
+          <div id="stress-table-wrap"></div>
+        </section>
+
+        <header id="case-header" class="case-header span-full" hidden>
+          <div class="case-header-main">
+            <div class="case-header-id">
+              <span class="case-label">Loan</span>
+              <span id="case-loan-id" class="case-loan-id">—</span>
+            </div>
+            <div class="case-header-grid">
+              <div><span class="case-label">Amount</span><span id="case-amount">—</span></div>
+              <div><span class="case-label">Term</span><span id="case-term">—</span></div>
+              <div><span class="case-label">Sector</span><span id="case-sector">—</span></div>
+              <div><span class="case-label">Scorecard</span><span id="case-scorecard">—</span></div>
+            </div>
+            <span id="decision-pill" class="decision-pill decision-pill-lg">—</span>
+            <span id="reason-check-chip" class="reason-check-chip" hidden>Reason consistent</span>
+            <span id="case-run-badge" class="badge badge-run" hidden></span>
+          </div>
+        </header>
+
+        <div id="reason-check-banner" class="reason-check-banner reason-check-hero span-full" hidden role="alert"></div>
+
+        <section id="whycard-summary" class="whycard-summary span-full" hidden aria-label="Why-Card summary">
+          <div class="whycard-summary-grid">
+            <div class="summary-panel summary-drivers">
+              <h3 class="summary-heading">Top drivers</h3>
+              <ol id="summary-drivers" class="drivers driver-chart"></ol>
+            </div>
+            <div class="summary-panel summary-cf">
+              <h3 class="summary-heading">Counterfactual</h3>
+              <div id="summary-counterfactual" class="counterfactual-callout status-msg">—</div>
+            </div>
+            <div class="summary-panel summary-claims-stepper">
+              <div id="claims-summary-tile" class="claims-summary-tile claims-summary-chips" aria-label="Claim counts"></div>
+              <ol id="run-stepper" class="run-stepper run-stepper-compact" aria-label="Investigation steps">
+                <li class="stepper-item" data-step="intent"><span class="stepper-dot"></span><span class="stepper-label">Intent</span></li>
+                <li class="stepper-item" data-step="evidence"><span class="stepper-dot"></span><span class="stepper-label">Evidence</span></li>
+                <li class="stepper-item" data-step="draft"><span class="stepper-dot"></span><span class="stepper-label">Draft</span></li>
+                <li class="stepper-item" data-step="verify"><span class="stepper-dot"></span><span class="stepper-label">Verify</span></li>
+                <li class="stepper-item" data-step="card"><span class="stepper-dot"></span><span class="stepper-label">Why&nbsp;card</span></li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel span-full" id="trace-section">
+          <h2>Investigation trace</h2>
+          <div id="trace-pipeline">
+            <p class="step-muted">Run an explanation to see each step.</p>
+          </div>
+        </section>
+
+        <section class="panel panel-whycard">
+          <h2>Why-Card</h2>
+          <div id="card-empty" class="status-msg">No card yet.</div>
+          <div id="card-body" hidden>
+            <h3 class="panel-subhead">Top drivers</h3>
+            <ol id="drivers" class="drivers driver-chart"></ol>
+            <h3 class="panel-subhead">Shipped claims (verifier)</h3>
+            <div id="claims" class="claims-shipped"></div>
+            <h3 class="panel-subhead">Counterfactual (declines)</h3>
+            <div id="counterfactual" class="counterfactual-callout status-msg">—</div>
+          </div>
+        </section>
+
+        <section class="panel panel-rejected">
+          <h2>Verifier: rejected drafts</h2>
+          <p class="step-muted">Unsupported Nemotron drafts never ship on the card.</p>
+          <div id="rejected-list"></div>
+        </section>
+
+        <section class="panel span-full panel-letter">
+          <h2>Applicant letter</h2>
+          <div id="letter-box" class="letter-paper">
+            <div class="letter-head">Harbor Credit <span class="letter-fictional">(fictional)</span></div>
+            <div id="letter-body" class="letter-body">—</div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="provenance-rail" aria-label="Run provenance">
+        <h2 class="provenance-title">Provenance</h2>
+        <ul class="provenance-list">
+          <li class="prov-item">
+            <div class="prov-label-row">
+              <span class="prov-dot" id="prov-dot-zetaris"></span>
+              <span class="prov-label">Zetaris</span>
+            </div>
+            <span class="prov-value" id="prov-zetaris">—</span>
+          </li>
+          <li class="prov-item">
+            <div class="prov-label-row">
+              <span class="prov-dot" id="prov-dot-scout"></span>
+              <span class="prov-label">Meterless Scout</span>
+            </div>
+            <span class="prov-value" id="prov-scout">Intent engine</span>
+          </li>
+          <li class="prov-item">
+            <div class="prov-label-row">
+              <span class="prov-dot" id="prov-dot-model"></span>
+              <span class="prov-label">Nemotron</span>
+            </div>
+            <span class="prov-value" id="prov-model">via Meterless Nightshift</span>
+          </li>
+          <li class="prov-item">
+            <span class="prov-label">Recorded at</span>
+            <span class="prov-value" id="prov-recorded">—</span>
+          </li>
+          <li class="prov-item">
+            <span class="prov-label">Latency</span>
+            <span class="prov-value" id="prov-latency">—</span>
+          </li>
+          <li class="prov-item">
+            <span class="prov-label">LLM calls</span>
+            <span class="prov-value" id="prov-llm">—</span>
+          </li>
+          <li class="prov-item" id="prov-reason-check-row" hidden>
+            <span class="prov-label">Recorded reason</span>
+            <span class="prov-value prov-chip-reason" id="prov-reason-check">—</span>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  <footer class="site-footer">SYNTHETIC data — fictional lender Harbor Credit (demo only, not real customers)</footer>
+
+  <div id="evidence-drawer" role="dialog" aria-modal="true" aria-label="Evidence">
+    <div id="evidence-panel">
+      <button type="button" id="close-evidence" class="btn-ghost">Close</button>
+      <h2 class="drawer-title">Evidence</h2>
+      <p id="ev-claim-text"></p>
+      <p><strong>Verification:</strong> <span id="ev-verification"></span></p>
+      <h3 class="panel-subhead">SQL</h3>
+      <pre id="ev-sql" class="sql-block"></pre>
+      <h3 class="panel-subhead">Rows</h3>
+      <pre id="ev-rows" class="rows-block"></pre>
+      <p class="hash" id="ev-hash"></p>
+    </div>
+  </div>
+
+  <script src="/ui/app.js"></script>
+</body>
+</html>

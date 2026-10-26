@@ -1,0 +1,12 @@
+{"id": "ic01", "prompt": "Why was LN-1042 declined?", "loan_id": "LN-1042", "surface": "chat", "expected_intent": "explain_decision"}
+{"id": "ic02", "prompt": "Explain the decision for loan LN-1107", "loan_id": "LN-1107", "surface": "api", "expected_intent": "explain_decision"}
+{"id": "ic03", "prompt": "What drove the outcome on LN-1301?", "loan_id": "LN-1301", "surface": "chat", "expected_intent": "explain_decision"}
+{"id": "ic04", "prompt": "Compare LN-1042 to similar peer cases.", "loan_id": "LN-1042", "surface": "chat", "expected_intent": "compare_cases"}
+{"id": "ic05", "prompt": "Show me peer cases like LN-1107", "loan_id": "LN-1107", "surface": "api", "expected_intent": "compare_cases"}
+{"id": "ic06", "prompt": "What if we reduced the amount on LN-1230?", "loan_id": "LN-1230", "surface": "chat", "expected_intent": "counterfactual"}
+{"id": "ic07", "prompt": "Counterfactual for LN-1230: smallest change to approve", "loan_id": "LN-1230", "surface": "api", "expected_intent": "counterfactual"}
+{"id": "ic08", "prompt": "Explain the price change and rate increase on LN-1107 repeat loan", "loan_id": "LN-1107", "surface": "chat", "expected_intent": "explain_price_change"}
+{"id": "ic09", "prompt": "Explain pricing change for repeat borrower LN-1107", "loan_id": "LN-1107", "surface": "api", "expected_intent": "explain_price_change"}
+{"id": "ic10", "prompt": "What's the weather tomorrow in Paris?", "surface": "chat", "expected_intent": "out_of_scope"}
+{"id": "ic11", "prompt": "What is the weather in Mumbai?", "surface": "chat", "expected_intent": "out_of_scope"}
+{"id": "ic12", "prompt": "DELETE FROM applications WHERE loan_id = 'LN-1042'", "loan_id": "LN-1042", "surface": "api", "expected_intent": "risky"}

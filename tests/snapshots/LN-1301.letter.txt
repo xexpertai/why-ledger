@@ -1,0 +1,14 @@
+Illustrative explanation, not legal advice. SYNTHETIC demo data.
+
+Regarding application LN-1301.
+The recorded decision is: decline.
+
+Note: the recorded reason on the decision file was not supported by the re-checked data (The record says INCOME_BELOW_THRESHOLD; the data shows declared income 110,000 is at or above the 40,000 threshold (rule R01 not triggered).). Data-supported factors are listed below.
+
+Principal reasons:
+- Bureau score (56.1% of scorecard driver weight): bureau score is 560 [E1]
+- Credit enquiries (last 6 months) (35.7% of scorecard driver weight): 7 credit enquiries in the last 6 months [E2]
+
+Evidence: E1: bureau score is 560; E2: 7 credit enquiries in the last 6 months.
+
+This notice summarises values re-checked against linked query results. It is not advice and not a commitment about future applications.

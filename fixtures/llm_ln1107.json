@@ -1,0 +1,12 @@
+{
+  "loan_id": "LN-1107",
+  "is_synthetic": true,
+  "description": "STUB scripted run for LN-1107 (repeat borrower, bureau defaults).",
+  "responses": [
+    "{\"step\":\"plan\",\"loan_id\":\"LN-1107\",\"thought\":\"Approve LN-1107 with pricing uplift: confirm outcome and bureau defaults for repeat borrower.\"}",
+    "{\"step\":\"tool\",\"tool\":\"sql\",\"sql\":\"SELECT loan_id, outcome, rate FROM applications WHERE loan_id = 'LN-1107'\"}",
+    "{\"step\":\"tool\",\"tool\":\"sql\",\"sql\":\"SELECT CAST(defaults AS INTEGER) AS defaults FROM bureau WHERE applicant_id = (SELECT applicant_id FROM applications WHERE loan_id = 'LN-1107')\"}",
+    "{\"step\":\"tool\",\"tool\":\"peer_cases\",\"sql\":\"\"}",
+    "{\"step\":\"draft_claims\",\"claims\":[{\"id\":\"c-defaults\",\"text\":\"bureau shows 2 defaults for this applicant\",\"values\":{\"defaults\":2},\"sql\":\"SELECT CAST(defaults AS INTEGER) AS defaults FROM bureau WHERE applicant_id = (SELECT applicant_id FROM applications WHERE loan_id = 'LN-1107')\"},{\"id\":\"c-outcome\",\"text\":\"application outcome is approve\",\"values\":{\"outcome\":\"approve\"},\"sql\":\"SELECT outcome FROM applications WHERE loan_id = 'LN-1107'\"}]}"
+  ]
+}

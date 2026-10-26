@@ -1,0 +1,12 @@
+Illustrative explanation, not legal advice. SYNTHETIC demo data.
+
+Regarding application LN-1107.
+The recorded decision is: approve.
+
+Main factors in the decision:
+- Bureau defaults (73.8% of scorecard driver weight): 2 bureau defaults on file [E1]
+- Years in business (12.3% of scorecard driver weight): years in business is 5 [E2]
+
+Evidence: E1: 2 bureau defaults on file; E2: years in business is 5.
+
+This notice summarises values re-checked against linked query results. It is not advice and not a commitment about future applications.

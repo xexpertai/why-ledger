@@ -1,0 +1,13 @@
+Illustrative explanation, not legal advice. SYNTHETIC demo data.
+
+Regarding application LN-1230.
+The recorded decision is: decline.
+
+Principal reasons:
+- Amount relative to declared income (52.1% of scorecard driver weight): requested amount is 2.6 times declared income [E1]
+- Credit utilisation (20.5% of scorecard driver weight): credit utilisation is 72 percent [E2]
+- Bureau score (20.5% of scorecard driver weight): bureau score is 640 [E3]
+
+Evidence: E1: requested amount is 2.6 times declared income; E2: credit utilisation is 72 percent; E3: bureau score is 640.
+
+This notice summarises values re-checked against linked query results. It is not advice and not a commitment about future applications.

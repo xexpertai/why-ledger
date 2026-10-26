@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "loan_id": "LN-1301",
+  "is_synthetic": true,
+  "recorded_at": "2026-10-23T12:07:07.223887+00:00",
+  "backends": {
+    "zetaris": "ZETARIS-JDBC",
+    "model": "STUB-recorded-nemotron"
+  },
+  "trace": [
+    {
+      "step": 0,
+      "tool": "scout_intent",
+      "sql": null,
+      "row_count": null,
+      "note": "intent=explain_decision confidence=1.00 band=high risk=low tools=['sql', 'policy_lookup']",
+      "intent": "explain_decision",
+      "routing_hash": "1b220da85426c2fde5b2eead9c7ec00c3ebc14c95486133fbd5a50711cab78ec"
+    },
+    {
+      "step": 1,
+      "tool": null,
+      "sql": null,
+      "row_count": null,
+      "note": "LN-1301 decline: bureau score and enquiry count vs policy; recorded reason may not match.",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 2,
+      "tool": "sql",
+      "sql": "SELECT loan_id, outcome, reason_code FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "row_count": 1,
+      "note": "executed sql",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 3,
+      "tool": "sql",
+      "sql": "SELECT CAST(score AS INTEGER) AS bureau_score, CAST(enquiries_6m AS INTEGER) AS enquiries_6m FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = (SELECT applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301')",
+      "row_count": 1,
+      "note": "executed sql",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 4,
+      "tool": "draft_claims",
+      "sql": null,
+      "row_count": 2,
+      "note": "drafted claims",
+      "intent": null,
+      "routing_hash": null
+    }
+  ],
+  "claims": [
+    {
+      "id": "c-score",
+      "text": "bureau score is 560",
+      "values": {
+        "bureau_score": 560
+      },
+      "query_ids": [
+        "d0075e2d-edcb-457a-a751-dd8805ee1069"
+      ]
+    },
+    {
+      "id": "c-enq",
+      "text": "seven enquiries in the last six months",
+      "values": {
+        "enquiries_6m": 7
+      },
+      "query_ids": [
+        "2fea6141-85f9-46ec-a812-62de02d5e4d6"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "query_id": "ad9f417a-5456-4764-b03d-aef578fe4966",
+      "sql": "SELECT loan_id, outcome, reason_code FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "reason_code"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-1301",
+          "outcome": "decline",
+          "reason_code": "INCOME_BELOW_THRESHOLD"
+        }
+      ],
+      "sha256": "544219c72a9629ba2567f1a117274d19f92fc7c1c150bd8de78a33bb9780cb9e"
+    },
+    {
+      "query_id": "ae00fcc0-26a1-45d4-aad9-f94fa311987a",
+      "sql": "SELECT CAST(score AS INTEGER) AS bureau_score, CAST(enquiries_6m AS INTEGER) AS enquiries_6m FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = (SELECT applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301')",
+      "columns": [
+        "bureau_score",
+        "enquiries_6m"
+      ],
+      "rows": [
+        {
+          "bureau_score": 560,
+          "enquiries_6m": 7
+        }
+      ],
+      "sha256": "549c47878b14b8c9dcdae968e8de07e4428274f4f0f6b38536b022fd0d2fe2a3"
+    },
+    {
+      "query_id": "d0075e2d-edcb-457a-a751-dd8805ee1069",
+      "sql": "SELECT CAST(score AS INTEGER) AS bureau_score FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = (SELECT applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301')",
+      "columns": [
+        "bureau_score"
+      ],
+      "rows": [
+        {
+          "bureau_score": 560
+        }
+      ],
+      "sha256": "a618f35e8cdf8acfb4d3a743818f043a9c2eeb352a9a8615f54b55134fb1eeac"
+    },
+    {
+      "query_id": "2fea6141-85f9-46ec-a812-62de02d5e4d6",
+      "sql": "SELECT CAST(enquiries_6m AS INTEGER) AS enquiries_6m FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = (SELECT applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301')",
+      "columns": [
+        "enquiries_6m"
+      ],
+      "rows": [
+        {
+          "enquiries_6m": 7
+        }
+      ],
+      "sha256": "369bdc77aaf64fa3ce67ae14f1d28a3761ec97e6b03746a47d21f2d46640e535"
+    }
+  ],
+  "card": {
+    "decision": "decline",
+    "mode": "live",
+    "drivers": [
+      {
+        "rank": 1,
+        "feature": "bureau_score",
+        "weight_pct": 40.8,
+        "claim_id": "c-score"
+      },
+      {
+        "rank": 2,
+        "feature": "enquiries_6m",
+        "weight_pct": 25.5,
+        "claim_id": "c-enq"
+      },
+      {
+        "rank": 3,
+        "feature": "bureau_score",
+        "weight_pct": 15.3,
+        "claim_id": "c-score"
+      },
+      {
+        "rank": 4,
+        "feature": "enquiries_6m",
+        "weight_pct": 10.2,
+        "claim_id": "c-enq"
+      },
+      {
+        "rank": 5,
+        "feature": "years_in_business",
+        "weight_pct": 8.2,
+        "claim_id": null
+      }
+    ],
+    "claims": [
+      {
+        "id": "c-score",
+        "text": "bureau score is 560",
+        "status": "VERIFIED",
+        "query_ids": [
+          "d0075e2d-edcb-457a-a751-dd8805ee1069"
+        ],
+        "row_hash": "a618f35e8cdf8acfb4d3a743818f043a9c2eeb352a9a8615f54b55134fb1eeac"
+      },
+      {
+        "id": "c-enq",
+        "text": "seven enquiries in the last six months",
+        "status": "VERIFIED",
+        "query_ids": [
+          "2fea6141-85f9-46ec-a812-62de02d5e4d6"
+        ],
+        "row_hash": "369bdc77aaf64fa3ce67ae14f1d28a3761ec97e6b03746a47d21f2d46640e535"
+      }
+    ],
+    "rejected": [],
+    "counterfactual": null,
+    "applicant_letter": "Regarding application LN-1301 (SYNTHETIC demo data).\nThe recorded decision is: decline.\nFactors that supported this explanation:\n- bureau score is 560\n- seven enquiries in the last six months\nThis summary reflects values re-checked against the linked query results. It is an explanation of the recorded decision for this SYNTHETIC case, not advice and not a commitment about future applications.",
+    "verified_at": "2026-10-23T12:07:06.673968+00:00",
+    "model": "STUB-recorded-nemotron",
+    "synthetic": true
+  },
+  "verification": [
+    {
+      "claim_id": "c-score",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c-enq",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    }
+  ]
+}

@@ -1,0 +1,190 @@
+{
+  "timestamp": "2026-10-23T12:07:28.432037+00:00",
+  "backends": {
+    "zetaris": "ZETARIS-JDBC",
+    "model": "STUB-recorded-nemotron",
+    "mode": "live",
+    "is_live": true,
+    "banner": "LIVE Zetaris JDBC + recorded STUB LLM (synthetic Why-Ledger data)."
+  },
+  "metrics": {
+    "planted_top_driver_accuracy": "4/4",
+    "planted_top_driver_accuracy_rate": 1.0,
+    "planted_driver_set_overlap": "4/4",
+    "verified_claim_rate": 1.0,
+    "drafted_verification_rate": 0.7778,
+    "ln1042_false_claim_rejected": true,
+    "ln1042_zero_unsupported_shipped": true,
+    "ln1230_counterfactual_ok": true,
+    "scout_intent_accuracy": "12/12",
+    "scout_intent_accuracy_rate": 1.0,
+    "median_latency_ms": 1102.47,
+    "llm_call_count_total": 31
+  },
+  "per_loan": [
+    {
+      "loan_id": "LN-1042",
+      "latency_ms": 4077.16,
+      "llm_calls": 6,
+      "drafted_claims": 3,
+      "verified_claims": 2,
+      "shipped_claims": 2,
+      "top_driver": "late_over_15_of_last_6",
+      "driver_set": [
+        "late_over_15_of_last_6",
+        "utilisation",
+        "utilisation",
+        "late_over_15_of_last_6",
+        "years_in_business"
+      ]
+    },
+    {
+      "loan_id": "LN-1107",
+      "latency_ms": 1898.7,
+      "llm_calls": 5,
+      "drafted_claims": 2,
+      "verified_claims": 2,
+      "shipped_claims": 2,
+      "top_driver": "defaults",
+      "driver_set": [
+        "defaults",
+        "defaults",
+        "years_in_business",
+        "term",
+        "prior_loans"
+      ]
+    },
+    {
+      "loan_id": "LN-1230",
+      "latency_ms": 1817.52,
+      "llm_calls": 4,
+      "drafted_claims": 2,
+      "verified_claims": 1,
+      "shipped_claims": 1,
+      "top_driver": "amount_to_income",
+      "driver_set": [
+        "amount_to_income",
+        "utilisation",
+        "bureau_score",
+        "amount_to_income",
+        "sector_risk"
+      ]
+    },
+    {
+      "loan_id": "LN-1301",
+      "latency_ms": 2304.31,
+      "llm_calls": 4,
+      "drafted_claims": 2,
+      "verified_claims": 2,
+      "shipped_claims": 2,
+      "top_driver": "bureau_score",
+      "driver_set": [
+        "bureau_score",
+        "enquiries_6m",
+        "bureau_score",
+        "enquiries_6m",
+        "years_in_business"
+      ]
+    },
+    {
+      "loan_id": "LN-0441",
+      "latency_ms": 1163.99,
+      "llm_calls": 2,
+      "drafted_claims": 0,
+      "verified_claims": 0,
+      "shipped_claims": 0,
+      "top_driver": "defaults",
+      "driver_set": [
+        "defaults",
+        "defaults",
+        "bureau_score",
+        "term",
+        "sector_risk"
+      ]
+    },
+    {
+      "loan_id": "LN-0108",
+      "latency_ms": 1032.38,
+      "llm_calls": 2,
+      "drafted_claims": 0,
+      "verified_claims": 0,
+      "shipped_claims": 0,
+      "top_driver": "bureau_score",
+      "driver_set": [
+        "bureau_score",
+        "declared_income",
+        "amount_to_income",
+        "amount_to_income",
+        "bureau_score"
+      ]
+    },
+    {
+      "loan_id": "LN-1084",
+      "latency_ms": 1040.94,
+      "llm_calls": 2,
+      "drafted_claims": 0,
+      "verified_claims": 0,
+      "shipped_claims": 0,
+      "top_driver": "bureau_score",
+      "driver_set": [
+        "bureau_score",
+        "declared_income",
+        "amount_to_income",
+        "amount_to_income",
+        "amount"
+      ]
+    },
+    {
+      "loan_id": "LN-0516",
+      "latency_ms": 637.61,
+      "llm_calls": 2,
+      "drafted_claims": 0,
+      "verified_claims": 0,
+      "shipped_claims": 0,
+      "top_driver": "defaults",
+      "driver_set": [
+        "defaults",
+        "bureau_score",
+        "enquiries_6m",
+        "term",
+        "years_in_business"
+      ]
+    },
+    {
+      "loan_id": "LN-0471",
+      "latency_ms": 696.72,
+      "llm_calls": 2,
+      "drafted_claims": 0,
+      "verified_claims": 0,
+      "shipped_claims": 0,
+      "top_driver": "bureau_score",
+      "driver_set": [
+        "bureau_score",
+        "enquiries_6m",
+        "years_in_business",
+        "declared_income",
+        "term"
+      ]
+    },
+    {
+      "loan_id": "LN-0314",
+      "latency_ms": 659.25,
+      "llm_calls": 2,
+      "drafted_claims": 0,
+      "verified_claims": 0,
+      "shipped_claims": 0,
+      "top_driver": "enquiries_6m",
+      "driver_set": [
+        "enquiries_6m",
+        "enquiries_6m",
+        "years_in_business",
+        "declared_income",
+        "utilisation"
+      ]
+    }
+  ],
+  "intent_cases": 12,
+  "metric_notes": {
+    "drafted_verification_rate": "Below 1.0 on planted loans because the LN-1042 fixture deliberately drafts the false claim 'declared income below 20000' (planted trap); the verifier rejects it, so not every drafted claim reaches VERIFIED."
+  }
+}

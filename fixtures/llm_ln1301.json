@@ -1,0 +1,11 @@
+{
+  "loan_id": "LN-1301",
+  "is_synthetic": true,
+  "description": "STUB scripted run for LN-1301 (bureau score floor and enquiries).",
+  "responses": [
+    "{\"step\":\"plan\",\"loan_id\":\"LN-1301\",\"thought\":\"LN-1301 decline: bureau score and enquiry count vs policy; recorded reason may not match.\"}",
+    "{\"step\":\"tool\",\"tool\":\"sql\",\"sql\":\"SELECT loan_id, outcome, reason_code FROM applications WHERE loan_id = 'LN-1301'\"}",
+    "{\"step\":\"tool\",\"tool\":\"sql\",\"sql\":\"SELECT CAST(score AS INTEGER) AS bureau_score, CAST(enquiries_6m AS INTEGER) AS enquiries_6m FROM bureau WHERE applicant_id = (SELECT applicant_id FROM applications WHERE loan_id = 'LN-1301')\"}",
+    "{\"step\":\"draft_claims\",\"claims\":[{\"id\":\"c-score\",\"text\":\"bureau score is 560\",\"values\":{\"bureau_score\":560},\"sql\":\"SELECT CAST(score AS INTEGER) AS bureau_score FROM bureau WHERE applicant_id = (SELECT applicant_id FROM applications WHERE loan_id = 'LN-1301')\"},{\"id\":\"c-enq\",\"text\":\"seven enquiries in the last six months\",\"values\":{\"enquiries_6m\":7},\"sql\":\"SELECT CAST(enquiries_6m AS INTEGER) AS enquiries_6m FROM bureau WHERE applicant_id = (SELECT applicant_id FROM applications WHERE loan_id = 'LN-1301')\"}]}"
+  ]
+}

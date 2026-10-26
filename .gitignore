@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+.venv/
+*.mp4
+zetaris-platform/
+zetaris-platform.zip
+KB/
+HARSHA-NOW.md
+.cursor-runs/
+data/out/
+*.egg-info/
+video/build/
+video/*.mp4

@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "loan_id": "LN-1107",
+  "is_synthetic": true,
+  "recorded_at": "2026-10-23T12:07:01.316891+00:00",
+  "backends": {
+    "zetaris": "ZETARIS-JDBC",
+    "model": "STUB-recorded-nemotron"
+  },
+  "trace": [
+    {
+      "step": 0,
+      "tool": "scout_intent",
+      "sql": null,
+      "row_count": null,
+      "note": "intent=explain_decision confidence=1.00 band=high risk=low tools=['sql', 'policy_lookup']",
+      "intent": "explain_decision",
+      "routing_hash": "1b220da85426c2fde5b2eead9c7ec00c3ebc14c95486133fbd5a50711cab78ec"
+    },
+    {
+      "step": 1,
+      "tool": null,
+      "sql": null,
+      "row_count": null,
+      "note": "Approve LN-1107 with pricing uplift: confirm outcome and bureau defaults for repeat borrower.",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 2,
+      "tool": "sql",
+      "sql": "SELECT loan_id, outcome, rate FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "row_count": 1,
+      "note": "executed sql",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 3,
+      "tool": "sql",
+      "sql": "SELECT CAST(defaults AS INTEGER) AS defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = (SELECT applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107')",
+      "row_count": 1,
+      "note": "executed sql",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 4,
+      "tool": "peer_cases",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1107' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "row_count": 5,
+      "note": "peer_cases",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 5,
+      "tool": "draft_claims",
+      "sql": null,
+      "row_count": 2,
+      "note": "drafted claims",
+      "intent": null,
+      "routing_hash": null
+    }
+  ],
+  "claims": [
+    {
+      "id": "c-defaults",
+      "text": "bureau shows 2 defaults for this applicant",
+      "values": {
+        "defaults": 2
+      },
+      "query_ids": [
+        "a5d7ea26-1768-4e87-b9ff-08368d1e674d"
+      ]
+    },
+    {
+      "id": "c-outcome",
+      "text": "application outcome is approve",
+      "values": {
+        "outcome": "approve"
+      },
+      "query_ids": [
+        "b868b23f-c67a-4452-a199-d2e49ed35e53"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "query_id": "f8f0824e-ae20-4bb6-941d-5f2ec14e8fb3",
+      "sql": "SELECT loan_id, outcome, rate FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "rate"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-1107",
+          "outcome": "approve",
+          "rate": 12.0
+        }
+      ],
+      "sha256": "aec45d16cae3aa1403d883f6c57ecad72f5d5e8c76fd45fe8fe274a8c2453f83"
+    },
+    {
+      "query_id": "a5d7ea26-1768-4e87-b9ff-08368d1e674d",
+      "sql": "SELECT CAST(defaults AS INTEGER) AS defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = (SELECT applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107')",
+      "columns": [
+        "defaults"
+      ],
+      "rows": [
+        {
+          "defaults": 2
+        }
+      ],
+      "sha256": "add3dfebd03576984497f51acada074e1a244eb983e61497a6f85fc6c56dffca"
+    },
+    {
+      "query_id": "39728a6b-e139-461b-8910-8cd33bcbe719",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1107' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "score",
+        "amount"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-0189",
+          "outcome": "approve",
+          "score": 169.0,
+          "amount": 85000.0
+        },
+        {
+          "loan_id": "LN-0346",
+          "outcome": "approve",
+          "score": 169.0,
+          "amount": 280000.0
+        },
+        {
+          "loan_id": "LN-0215",
+          "outcome": "approve",
+          "score": 169.0,
+          "amount": 200000.0
+        },
+        {
+          "loan_id": "LN-0166",
+          "outcome": "approve",
+          "score": 169.0,
+          "amount": 200000.0
+        },
+        {
+          "loan_id": "LN-0232",
+          "outcome": "approve",
+          "score": 169.0,
+          "amount": 200000.0
+        }
+      ],
+      "sha256": "94ec711f3b895775c9a5cff83f88142bf9e1d3e4bd405df5dcd3e599bc1fbfc9"
+    },
+    {
+      "query_id": "b868b23f-c67a-4452-a199-d2e49ed35e53",
+      "sql": "SELECT outcome FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "outcome"
+      ],
+      "rows": [
+        {
+          "outcome": "approve"
+        }
+      ],
+      "sha256": "35b33522b39782b0b9f8c5cc89d6c2ecbc59dcf9a38a23f9b0e24bf2c6715499"
+    }
+  ],
+  "card": {
+    "decision": "approve",
+    "mode": "live",
+    "drivers": [
+      {
+        "rank": 1,
+        "feature": "defaults",
+        "weight_pct": 46.2,
+        "claim_id": "c-defaults"
+      },
+      {
+        "rank": 2,
+        "feature": "defaults",
+        "weight_pct": 27.7,
+        "claim_id": "c-defaults"
+      },
+      {
+        "rank": 3,
+        "feature": "years_in_business",
+        "weight_pct": 12.3,
+        "claim_id": null
+      },
+      {
+        "rank": 4,
+        "feature": "term",
+        "weight_pct": 7.7,
+        "claim_id": null
+      },
+      {
+        "rank": 5,
+        "feature": "prior_loans",
+        "weight_pct": 6.2,
+        "claim_id": null
+      }
+    ],
+    "claims": [
+      {
+        "id": "c-defaults",
+        "text": "bureau shows 2 defaults for this applicant",
+        "status": "VERIFIED",
+        "query_ids": [
+          "a5d7ea26-1768-4e87-b9ff-08368d1e674d"
+        ],
+        "row_hash": "add3dfebd03576984497f51acada074e1a244eb983e61497a6f85fc6c56dffca"
+      },
+      {
+        "id": "c-outcome",
+        "text": "application outcome is approve",
+        "status": "VERIFIED",
+        "query_ids": [
+          "b868b23f-c67a-4452-a199-d2e49ed35e53"
+        ],
+        "row_hash": "35b33522b39782b0b9f8c5cc89d6c2ecbc59dcf9a38a23f9b0e24bf2c6715499"
+      }
+    ],
+    "rejected": [],
+    "counterfactual": null,
+    "applicant_letter": "Regarding application LN-1107 (SYNTHETIC demo data).\nThe recorded decision is: approve.\nFactors that supported this explanation:\n- bureau shows 2 defaults for this applicant\n- application outcome is approve\nThis summary reflects values re-checked against the linked query results. It is an explanation of the recorded decision for this SYNTHETIC case, not advice and not a commitment about future applications.",
+    "verified_at": "2026-10-23T12:07:00.906668+00:00",
+    "model": "STUB-recorded-nemotron",
+    "synthetic": true
+  },
+  "verification": [
+    {
+      "claim_id": "c-defaults",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c-outcome",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    }
+  ]
+}

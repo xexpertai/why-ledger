@@ -1,0 +1,542 @@
+{
+  "version": 1,
+  "loan_id": "LN-1301",
+  "is_synthetic": true,
+  "recorded_at": "2026-10-23T15:01:39.711685+00:00",
+  "backends": {
+    "zetaris": "ZETARIS-JDBC",
+    "model": "Nemotron via integrate.api.nvidia.com (nvidia/nemotron-3.5-lightning-30b-a3b)",
+    "live_agent_mode": "planned"
+  },
+  "trace": [
+    {
+      "step": 0,
+      "tool": "scout_intent",
+      "sql": null,
+      "row_count": null,
+      "note": "intent=explain_decision confidence=1.00 band=high risk=low tools=['sql', 'policy_lookup']",
+      "intent": "explain_decision",
+      "routing_hash": "1b220da85426c2fde5b2eead9c7ec00c3ebc14c95486133fbd5a50711cab78ec"
+    },
+    {
+      "step": 1,
+      "tool": "planned_evidence",
+      "sql": "SELECT loan_id, outcome, reason_code, amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id, score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "row_count": 1,
+      "note": "ev_application (application)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 2,
+      "tool": "planned_evidence",
+      "sql": "SELECT utilisation, score AS bureau_score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1301'",
+      "row_count": 1,
+      "note": "ev_bureau (bureau)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 3,
+      "tool": "planned_evidence",
+      "sql": "SELECT 0 AS late_count FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301' LIMIT 1",
+      "row_count": 1,
+      "note": "ev_payment_conduct (payment_conduct)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 4,
+      "tool": "planned_evidence",
+      "sql": "SELECT rule_id, feature, points, text FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id IN ('R10', 'R13', 'R11', 'R14', 'R16')",
+      "row_count": 5,
+      "note": "ev_scorecard_drivers (scorecard_drivers)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 5,
+      "tool": "planned_evidence",
+      "sql": "SELECT doc_id, section, substr(text, 1, 200) AS excerpt FROM WHY_LEDGER_SYN.policy_docs WHERE text LIKE '%income below threshold%' OR section LIKE '%income below threshold%' LIMIT 5",
+      "row_count": 0,
+      "note": "ev_policy_lookup (policy_lookup)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 6,
+      "tool": "planned_evidence",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score AS scorecard_points, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1301' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "row_count": 5,
+      "note": "ev_peer_cases (peer_cases)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 7,
+      "tool": "draft_claims",
+      "sql": null,
+      "row_count": 7,
+      "note": "drafted claims",
+      "intent": null,
+      "routing_hash": null
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "text": "outcome is decline",
+      "values": {
+        "outcome": "decline"
+      },
+      "query_ids": [
+        "30a4df15-8e8c-48c0-b758-81edcd430b83",
+        "a1f94c06-3951-4261-93e5-aaa26e522fa6"
+      ]
+    },
+    {
+      "id": "c2",
+      "text": "reason_code is INCOME_BELOW_THRESHOLD",
+      "values": {
+        "reason_code": "INCOME_BELOW_THRESHOLD"
+      },
+      "query_ids": [
+        "30a4df15-8e8c-48c0-b758-81edcd430b83",
+        "664c2caf-71b2-4ece-ab9a-e46b0875d1c4"
+      ]
+    },
+    {
+      "id": "c3",
+      "text": "scorecard_points is 134.0",
+      "values": {
+        "scorecard_points": 134.0
+      },
+      "query_ids": [
+        "30a4df15-8e8c-48c0-b758-81edcd430b83",
+        "1eca1eb8-4eaf-480b-ba27-c2f6db8c8166"
+      ]
+    },
+    {
+      "id": "c4",
+      "text": "bureau_score is 560",
+      "values": {
+        "bureau_score": 560
+      },
+      "query_ids": [
+        "d02a43c6-ac42-4986-9834-2c8d2111a97a",
+        "163bfc0e-076b-473d-8f81-3dc73ef487b9"
+      ]
+    },
+    {
+      "id": "c5",
+      "text": "utilisation is 25%",
+      "values": {
+        "utilisation": 25
+      },
+      "query_ids": [
+        "d02a43c6-ac42-4986-9834-2c8d2111a97a",
+        "654a8e0a-1d76-4c63-9aac-0dd23035f3e8"
+      ]
+    },
+    {
+      "id": "c6",
+      "text": "late_count is 0",
+      "values": {
+        "late_count": 0
+      },
+      "query_ids": [
+        "f0ed9786-a8e8-491a-9837-5bacdc0145a8",
+        "f0ed9786-a8e8-491a-9837-5bacdc0145a8"
+      ]
+    },
+    {
+      "id": "c7",
+      "text": "peer cases for LN-1301 with outcome decline have scorecard_points 134.0 and amounts 55000.0, 120000.0, 70000.0, 55000.0, 280000.0",
+      "values": {
+        "peer_scorecard_points": 134.0,
+        "peer_amounts": "[55000.0, 120000.0, 70000.0, 55000.0, 280000.0]"
+      },
+      "query_ids": [
+        "96e843a5-56b3-4be6-9730-ee94127096ad",
+        "96e843a5-56b3-4be6-9730-ee94127096ad"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "query_id": "30a4df15-8e8c-48c0-b758-81edcd430b83",
+      "sql": "SELECT loan_id, outcome, reason_code, amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id, score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "reason_code",
+        "amount",
+        "term",
+        "sector",
+        "years_in_business",
+        "declared_income",
+        "prior_loans",
+        "prior_loan_id",
+        "applicant_id",
+        "scorecard_points"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-1301",
+          "outcome": "decline",
+          "reason_code": "INCOME_BELOW_THRESHOLD",
+          "amount": 100000.0,
+          "term": 36,
+          "sector": "healthcare",
+          "years_in_business": 7.0,
+          "declared_income": 110000.0,
+          "prior_loans": 0,
+          "prior_loan_id": null,
+          "applicant_id": "AP-1301",
+          "scorecard_points": 134.0
+        }
+      ],
+      "sha256": "669c2aee7d0c938eaa9bc7b7282c2a3ffa63c8fd7536b9f68ad11eedccb2c5fe"
+    },
+    {
+      "query_id": "d02a43c6-ac42-4986-9834-2c8d2111a97a",
+      "sql": "SELECT utilisation, score AS bureau_score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1301'",
+      "columns": [
+        "utilisation",
+        "bureau_score",
+        "enquiries_6m",
+        "defaults"
+      ],
+      "rows": [
+        {
+          "utilisation": 25,
+          "bureau_score": 560,
+          "enquiries_6m": 7,
+          "defaults": 0
+        }
+      ],
+      "sha256": "366aadf26d71afe1ea8341b0eae30fcb3ed6fed924cbf40e9b3f98790374538d"
+    },
+    {
+      "query_id": "f0ed9786-a8e8-491a-9837-5bacdc0145a8",
+      "sql": "SELECT 0 AS late_count FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301' LIMIT 1",
+      "columns": [
+        "late_count"
+      ],
+      "rows": [
+        {
+          "late_count": 0
+        }
+      ],
+      "sha256": "66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65"
+    },
+    {
+      "query_id": "9d58b197-c1f5-4912-867d-af90063d6f19",
+      "sql": "SELECT rule_id, feature, points, text FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id IN ('R10', 'R13', 'R11', 'R14', 'R16')",
+      "columns": [
+        "rule_id",
+        "feature",
+        "points",
+        "text"
+      ],
+      "rows": [
+        {
+          "rule_id": "R10",
+          "feature": "bureau_score",
+          "points": -40,
+          "text": "Bureau score below Harbor Credit floor"
+        },
+        {
+          "rule_id": "R11",
+          "feature": "bureau_score",
+          "points": -15,
+          "text": "Bureau score below preferred band"
+        },
+        {
+          "rule_id": "R13",
+          "feature": "enquiries_6m",
+          "points": -25,
+          "text": "Six or more bureau enquiries in six months"
+        },
+        {
+          "rule_id": "R14",
+          "feature": "enquiries_6m",
+          "points": -10,
+          "text": "Four or more bureau enquiries in six months"
+        },
+        {
+          "rule_id": "R16",
+          "feature": "years_in_business",
+          "points": 8,
+          "text": "Business operating five years or more"
+        }
+      ],
+      "sha256": "3d38178a1624e6b33efc52ffb9ce2a6656573c7ed2fa7687f33b123f54defdac"
+    },
+    {
+      "query_id": "df65d5dd-c85b-40d2-b337-1065f5ccd11e",
+      "sql": "SELECT doc_id, section, substr(text, 1, 200) AS excerpt FROM WHY_LEDGER_SYN.policy_docs WHERE text LIKE '%income below threshold%' OR section LIKE '%income below threshold%' LIMIT 5",
+      "columns": [
+        "doc_id",
+        "section",
+        "excerpt"
+      ],
+      "rows": [],
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "query_id": "96e843a5-56b3-4be6-9730-ee94127096ad",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score AS scorecard_points, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1301' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "scorecard_points",
+        "amount"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-0281",
+          "outcome": "decline",
+          "scorecard_points": 134.0,
+          "amount": 55000.0
+        },
+        {
+          "loan_id": "LN-0933",
+          "outcome": "decline",
+          "scorecard_points": 134.0,
+          "amount": 120000.0
+        },
+        {
+          "loan_id": "LN-0472",
+          "outcome": "decline",
+          "scorecard_points": 134.0,
+          "amount": 70000.0
+        },
+        {
+          "loan_id": "LN-0066",
+          "outcome": "decline",
+          "scorecard_points": 134.0,
+          "amount": 55000.0
+        },
+        {
+          "loan_id": "LN-0831",
+          "outcome": "decline",
+          "scorecard_points": 134.0,
+          "amount": 280000.0
+        }
+      ],
+      "sha256": "b2467ccc9d8da3a8a0bbeb86924fb10158a7401754807e6e8c5bf67c126b5a41"
+    },
+    {
+      "query_id": "a1f94c06-3951-4261-93e5-aaa26e522fa6",
+      "sql": "SELECT outcome FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "columns": [
+        "outcome"
+      ],
+      "rows": [
+        {
+          "outcome": "decline"
+        }
+      ],
+      "sha256": "a3a70771e2c874f346f047e3f4d6a5730a4e4e95abd605579c7f856c3b30a9f3"
+    },
+    {
+      "query_id": "664c2caf-71b2-4ece-ab9a-e46b0875d1c4",
+      "sql": "SELECT reason_code FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "columns": [
+        "reason_code"
+      ],
+      "rows": [
+        {
+          "reason_code": "INCOME_BELOW_THRESHOLD"
+        }
+      ],
+      "sha256": "0ac7cb2a5e4948f6aa50b2594e927538e74999afa886ef255dda25fe066439e4"
+    },
+    {
+      "query_id": "1eca1eb8-4eaf-480b-ba27-c2f6db8c8166",
+      "sql": "SELECT score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1301'",
+      "columns": [
+        "scorecard_points"
+      ],
+      "rows": [
+        {
+          "scorecard_points": 134.0
+        }
+      ],
+      "sha256": "dadc620a83e62fac75ec67ad406669257b941d7e43b4790af5def7e6282bafb6"
+    },
+    {
+      "query_id": "163bfc0e-076b-473d-8f81-3dc73ef487b9",
+      "sql": "SELECT score AS bureau_score FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1301'",
+      "columns": [
+        "bureau_score"
+      ],
+      "rows": [
+        {
+          "bureau_score": 560
+        }
+      ],
+      "sha256": "a618f35e8cdf8acfb4d3a743818f043a9c2eeb352a9a8615f54b55134fb1eeac"
+    },
+    {
+      "query_id": "654a8e0a-1d76-4c63-9aac-0dd23035f3e8",
+      "sql": "SELECT utilisation FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1301'",
+      "columns": [
+        "utilisation"
+      ],
+      "rows": [
+        {
+          "utilisation": 25
+        }
+      ],
+      "sha256": "3b5b47b60942535c0b484ea39ccd290a506b2b145a6b94ddbd1a67c3297928c6"
+    }
+  ],
+  "card": {
+    "decision": "decline",
+    "mode": "live",
+    "drivers": [
+      {
+        "rank": 1,
+        "feature": "bureau_score",
+        "weight_pct": 40.8,
+        "claim_id": "c3"
+      },
+      {
+        "rank": 2,
+        "feature": "enquiries_6m",
+        "weight_pct": 25.5,
+        "claim_id": null
+      },
+      {
+        "rank": 3,
+        "feature": "bureau_score",
+        "weight_pct": 15.3,
+        "claim_id": "c3"
+      },
+      {
+        "rank": 4,
+        "feature": "enquiries_6m",
+        "weight_pct": 10.2,
+        "claim_id": null
+      },
+      {
+        "rank": 5,
+        "feature": "years_in_business",
+        "weight_pct": 8.2,
+        "claim_id": null
+      }
+    ],
+    "claims": [
+      {
+        "id": "c1",
+        "text": "outcome is decline",
+        "status": "VERIFIED",
+        "query_ids": [
+          "30a4df15-8e8c-48c0-b758-81edcd430b83",
+          "a1f94c06-3951-4261-93e5-aaa26e522fa6"
+        ],
+        "row_hash": "669c2aee7d0c938eaa9bc7b7282c2a3ffa63c8fd7536b9f68ad11eedccb2c5fe,a3a70771e2c874f346f047e3f4d6a5730a4e4e95abd605579c7f856c3b30a9f3"
+      },
+      {
+        "id": "c2",
+        "text": "reason_code is INCOME_BELOW_THRESHOLD",
+        "status": "VERIFIED",
+        "query_ids": [
+          "30a4df15-8e8c-48c0-b758-81edcd430b83",
+          "664c2caf-71b2-4ece-ab9a-e46b0875d1c4"
+        ],
+        "row_hash": "669c2aee7d0c938eaa9bc7b7282c2a3ffa63c8fd7536b9f68ad11eedccb2c5fe,0ac7cb2a5e4948f6aa50b2594e927538e74999afa886ef255dda25fe066439e4"
+      },
+      {
+        "id": "c3",
+        "text": "scorecard_points is 134.0",
+        "status": "VERIFIED",
+        "query_ids": [
+          "30a4df15-8e8c-48c0-b758-81edcd430b83",
+          "1eca1eb8-4eaf-480b-ba27-c2f6db8c8166"
+        ],
+        "row_hash": "669c2aee7d0c938eaa9bc7b7282c2a3ffa63c8fd7536b9f68ad11eedccb2c5fe,dadc620a83e62fac75ec67ad406669257b941d7e43b4790af5def7e6282bafb6"
+      },
+      {
+        "id": "c4",
+        "text": "bureau_score is 560",
+        "status": "VERIFIED",
+        "query_ids": [
+          "d02a43c6-ac42-4986-9834-2c8d2111a97a",
+          "163bfc0e-076b-473d-8f81-3dc73ef487b9"
+        ],
+        "row_hash": "366aadf26d71afe1ea8341b0eae30fcb3ed6fed924cbf40e9b3f98790374538d,a618f35e8cdf8acfb4d3a743818f043a9c2eeb352a9a8615f54b55134fb1eeac"
+      },
+      {
+        "id": "c5",
+        "text": "utilisation is 25%",
+        "status": "VERIFIED",
+        "query_ids": [
+          "d02a43c6-ac42-4986-9834-2c8d2111a97a",
+          "654a8e0a-1d76-4c63-9aac-0dd23035f3e8"
+        ],
+        "row_hash": "366aadf26d71afe1ea8341b0eae30fcb3ed6fed924cbf40e9b3f98790374538d,3b5b47b60942535c0b484ea39ccd290a506b2b145a6b94ddbd1a67c3297928c6"
+      },
+      {
+        "id": "c6",
+        "text": "late_count is 0",
+        "status": "VERIFIED",
+        "query_ids": [
+          "f0ed9786-a8e8-491a-9837-5bacdc0145a8",
+          "f0ed9786-a8e8-491a-9837-5bacdc0145a8"
+        ],
+        "row_hash": "66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65,66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65"
+      }
+    ],
+    "rejected": [
+      {
+        "text": "peer cases for LN-1301 with outcome decline have scorecard_points 134.0 and amounts 55000.0, 120000.0, 70000.0, 55000.0, 280000.0",
+        "reason": "asserted values not found in evidence rows: peer_amounts"
+      }
+    ],
+    "counterfactual": null,
+    "applicant_letter": "Regarding application LN-1301 (SYNTHETIC demo data).\nThe recorded decision is: decline.\nFactors that supported this explanation:\n- outcome is decline\n- reason_code is INCOME_BELOW_THRESHOLD\n- scorecard_points is 134.0\n- bureau_score is 560\n- utilisation is 25%\n- late_count is 0\nThis summary reflects values re-checked against the linked query results. It is an explanation of the recorded decision for this SYNTHETIC case, not advice and not a commitment about future applications.",
+    "verified_at": "2026-10-23T15:01:38.089791+00:00",
+    "model": "Nemotron via integrate.api.nvidia.com (nvidia/nemotron-3.5-lightning-30b-a3b)",
+    "synthetic": true
+  },
+  "verification": [
+    {
+      "claim_id": "c1",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c2",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c3",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c4",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c5",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c6",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c7",
+      "status": "UNSUPPORTED",
+      "reason": "asserted values not found in evidence rows: peer_amounts"
+    }
+  ]
+}

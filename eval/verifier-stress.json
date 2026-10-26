@@ -1,0 +1,169 @@
+{
+  "label": "PLANTED test claims, not model output",
+  "is_synthetic": true,
+  "recorded_at": "2026-10-25T17:06:34Z",
+  "backend": "ZETARIS-JDBC",
+  "totals": {
+    "cases": 14,
+    "verified": 4,
+    "unsupported": 10,
+    "expect_matched": 14,
+    "reason_matched": 14
+  },
+  "rows": [
+    {
+      "loan_id": "LN-1042",
+      "claim": "late_count is 3 (SQL filters prior loan without prior-loan wording)",
+      "planted_truth": "wrong loan scope: SQL uses LN-0900 but claim omits prior-loan label",
+      "verdict": "UNSUPPORTED",
+      "reason": "evidence is for a different loan (LN-0900)",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "evidence is for a different loan",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1042",
+      "claim": "3 late payments on prior loan LN-0900 (SYNTHETIC planted true)",
+      "planted_truth": "true: prior-loan conduct with explicit prior-loan text",
+      "verdict": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows",
+      "expect": "VERIFIED",
+      "ok": true,
+      "expected_reason": "hash matched",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1042",
+      "claim": "declared income is 20000 (SYNTHETIC planted false)",
+      "planted_truth": "false: declared_income is 72000",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted value does not match column in evidence rows: declared_income",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted value does not match column",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1042",
+      "claim": "utilisation value under late_count key (wrong column)",
+      "planted_truth": "wrong column: 91 is utilisation, not late_count",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted value does not match column in evidence rows: late_count",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted value does not match column",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1042",
+      "claim": "non-existent column name",
+      "planted_truth": "non-existent column phantom_metric",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted column not in query result: phantom_metric",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted column not in query result",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1107",
+      "claim": "outcome approve (SYNTHETIC planted true)",
+      "planted_truth": "true: outcome column is approve",
+      "verdict": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows",
+      "expect": "VERIFIED",
+      "ok": true,
+      "expected_reason": "hash matched",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1107",
+      "claim": "defaults is 0 (SYNTHETIC planted false)",
+      "planted_truth": "false: defaults is 2",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted value does not match column in evidence rows: defaults",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted value does not match column",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1107",
+      "claim": "defaults count under outcome key",
+      "planted_truth": "wrong column: 2 is defaults, not outcome",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted value does not match column in evidence rows: outcome",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted value does not match column",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1230",
+      "claim": "scorecard points 137 (SYNTHETIC planted true)",
+      "planted_truth": "true: scorecard_points alias column is 137",
+      "verdict": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows",
+      "expect": "VERIFIED",
+      "ok": true,
+      "expected_reason": "hash matched",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1230",
+      "claim": "scorecard points 200 (SYNTHETIC planted false)",
+      "planted_truth": "false: scorecard_points is 137",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted value does not match column in evidence rows: scorecard_points",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted value does not match column",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1230",
+      "claim": "SQL uses display alias bureau_score without AS (planted bad SQL)",
+      "planted_truth": "bad SQL: bureau_score is not a physical column",
+      "verdict": "UNSUPPORTED",
+      "reason": "claim SQL failed on Zetaris: ZetarisJDBCError: bureau_score",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "Zetaris",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1301",
+      "claim": "enquiries_6m is 7 (SYNTHETIC planted true)",
+      "planted_truth": "true: enquiries_6m column is 7",
+      "verdict": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows",
+      "expect": "VERIFIED",
+      "ok": true,
+      "expected_reason": "hash matched",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1301",
+      "claim": "bureau score under enquiries_6m key",
+      "planted_truth": "wrong column: 560 is bureau score, not enquiries",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted value does not match column in evidence rows: enquiries_6m",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted value does not match column",
+      "reason_matched": true
+    },
+    {
+      "loan_id": "LN-1301",
+      "claim": "fictitious column credit_tier",
+      "planted_truth": "non-existent column credit_tier",
+      "verdict": "UNSUPPORTED",
+      "reason": "asserted column not in query result: credit_tier",
+      "expect": "UNSUPPORTED",
+      "ok": true,
+      "expected_reason": "asserted column not in query result",
+      "reason_matched": true
+    }
+  ]
+}

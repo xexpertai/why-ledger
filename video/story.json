@@ -1,0 +1,82 @@
+[
+ {
+  "id": "s01",
+  "text": "Credit decisions are hard to explain, and regulators and applicants need reasons. Why Ledger is for credit analysts and compliance teams at a lender. It answers one question: why was this loan declined? Every claim is re-checked against Zeh-tah-riss, by re-running its S Q L, and claims the data does not support never ship. You also get a counterfactual: what small change would flip the decision. It runs on Zeh-tah-riss, Meter-less Nightshift and NVIDIA Nemotron on my own machine, and I built it in Cursor. The data is synthetic, and the lender is fictional.",
+  "cut": [
+   5
+  ]
+ },
+ {
+  "id": "s02",
+  "text": "Here is the app. I am replaying a run I recorded live on the twenty-fifth of October. Live runs took between six point seven and ten point two seconds per loan, and replay keeps the demo repeatable. Loan ten forty-two was declined.",
+  "cut": [
+   0,
+   2
+  ]
+ },
+ {
+  "id": "s03",
+  "text": "Step one is the intent check. Meter-less Scout Intent classifies the question as explain decision, and runs a risk guard that stops injected prompts before any model runs.",
+  "cut": [
+   0
+  ]
+ },
+ {
+  "id": "s04",
+  "text": "Step two is evidence. Six read-only queries run on Zeh-tah-riss over J D B C: the application, the bureau record, payment conduct, scorecard drivers, policy rules, and peer cases. The bureau query shows utilisation of ninety-one percent. Each result is logged in an append-only ledger, with a S H A two fifty six hash.",
+  "cut": [
+   0
+  ]
+ },
+ {
+  "id": "s05",
+  "text": "Step three: Nemotron reads that evidence and drafts six short claims, each citing the queries behind it. It runs through Meter-less Nightshift on my machine. This connection test passes, and no key is shown."
+ },
+ {
+  "id": "s06",
+  "text": "Step four is the verifier. It re-runs each cited query on Zeh-tah-riss, compares the row hash, checks that every stated value matches the named column, and checks that the evidence is for the same loan. Verified means the data supports it. All six claims were verified.",
+  "cut": [
+   0,
+   2
+  ]
+ },
+ {
+  "id": "s07",
+  "text": "The Why-Card ranks drivers from scorecard points in the data, not by the model: late payments, forty-seven point five percent, and credit utilisation, forty-five point eight. The counterfactual: with two late payments instead of three, this loan flips to approve. The applicant letter lists the principal reasons in rank order, using only logged, hash-checked query evidence."
+ },
+ {
+  "id": "s08",
+  "text": "Loan twelve thirty is also a decline. An earlier Nightshift attempt on this loan crashed, because a drafted claim cited a column that does not exist; the verifier now rejects such a claim instead of crashing. In the recorded run, all six claims were verified. The top driver is amount to income, at fifty-two percent, and the letter leads with it."
+ },
+ {
+  "id": "s08b",
+  "text": "Now the moment that matters most for compliance. Loan thirteen oh one was declined, and the decision record says the reason was income below threshold. Why Ledger re-checks that reason on Zeh-tah-riss: declared income is one hundred ten thousand, above the forty thousand threshold. So the recorded reason is not supported by the data, and the card raises a red flag. The data-supported drivers are bureau score, at fifty-six percent, and credit enquiries, and a bureau score of five eighty would flip it to approve.",
+  "cut": [
+   0
+  ]
+ },
+ {
+  "id": "s09",
+  "text": "To see the verifier reject things, we plant claims ourselves. These are test claims, not model output. A declared income of twenty thousand? The data says seventy-two thousand, so it is unsupported. A claim using the prior loan's data without saying so is rejected for loan scope. Across fourteen cases on live Zeh-tah-riss, four verified and ten were rejected, and all fourteen matched on verdict and on the intended reason.",
+  "cut": [
+   3
+  ]
+ },
+ {
+  "id": "s10",
+  "text": "Across four loans, one Nightshift run each, the top driver matched the planted truth four out of four. The model drafted twenty-two claims, and all twenty-two were verified, with latency between six point seven and ten point two seconds per loan. The recorded-reason check flagged the one planted mismatch, with no false flags on the other three."
+ },
+ {
+  "id": "s11",
+  "text": "Limits, honestly. The data is synthetic. Latency varies on the free tier: an earlier recording took up to five hundred thirty-four seconds, and this one under eleven. Only one Nemotron model works on this account, and it is one run per loan, so no variance claim. Next, more loans and more policies.",
+  "cut": [
+   1,
+   2,
+   3
+  ]
+ },
+ {
+  "id": "s12",
+  "text": "Why Ledger, built by Harsha Shinde, using only synthetic data. Narration: AI text-to-speech voice, Kokoro. The code is on GitHub."
+ }
+]

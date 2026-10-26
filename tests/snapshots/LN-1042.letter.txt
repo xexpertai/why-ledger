@@ -1,0 +1,12 @@
+Illustrative explanation, not legal advice. SYNTHETIC demo data.
+
+Regarding application LN-1042.
+The recorded decision is: decline.
+
+Principal reasons:
+- Late payments on prior loan (over 15 days) (47.5% of scorecard driver weight): prior loan LN-0900 has 3 late payments over 15 days in the last 6 [E1]
+- Credit utilisation (45.8% of scorecard driver weight): utilisation is 91 percent [E2]
+
+Evidence: E1: prior loan LN-0900 has 3 late payments over 15 days in the last 6; E2: utilisation is 91 percent.
+
+This notice summarises values re-checked against linked query results. It is not advice and not a commitment about future applications.

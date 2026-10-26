@@ -1,0 +1,11 @@
+{
+  "loan_id": "LN-1230",
+  "is_synthetic": true,
+  "description": "STUB scripted run for LN-1230 (borderline decline, amount-to-income driver).",
+  "responses": [
+    "{\"step\":\"plan\",\"loan_id\":\"LN-1230\",\"thought\":\"LN-1230 declined on amount-to-income; gather application and income fields.\"}",
+    "{\"step\":\"tool\",\"tool\":\"sql\",\"sql\":\"SELECT loan_id, outcome, amount, declared_income FROM applications WHERE loan_id = 'LN-1230'\"}",
+    "{\"step\":\"tool\",\"tool\":\"sql\",\"sql\":\"SELECT CAST(amount AS REAL) AS amount, CAST(declared_income AS REAL) AS declared_income FROM applications WHERE loan_id = 'LN-1230'\"}",
+    "{\"step\":\"draft_claims\",\"claims\":[{\"id\":\"c-ati\",\"text\":\"amount to income ratio is about 2.62\",\"values\":{\"amount_to_income\":2.62},\"sql\":\"SELECT CAST(amount AS REAL) AS amount, CAST(declared_income AS REAL) AS declared_income FROM applications WHERE loan_id = 'LN-1230'\"},{\"id\":\"c-outcome\",\"text\":\"recorded outcome is decline\",\"values\":{\"outcome\":\"decline\"},\"sql\":\"SELECT outcome FROM applications WHERE loan_id = 'LN-1230'\"}]}"
+  ]
+}

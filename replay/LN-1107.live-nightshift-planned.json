@@ -1,0 +1,565 @@
+{
+  "version": 1,
+  "loan_id": "LN-1107",
+  "is_synthetic": true,
+  "recorded_at": "2026-10-25T17:06:56.278236+00:00",
+  "backends": {
+    "zetaris": "ZETARIS-JDBC",
+    "model": "Meterless Nightshift (nvidia/nemotron-3.5-lightning-30b-a3b)",
+    "llm_provider": "meterless-nightshift",
+    "llm_model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "live_agent_mode": "planned"
+  },
+  "trace": [
+    {
+      "step": 0,
+      "tool": "scout_intent",
+      "sql": null,
+      "row_count": null,
+      "note": "intent=explain_decision confidence=1.00 band=high risk=low tools=['sql', 'policy_lookup']",
+      "intent": "explain_decision",
+      "routing_hash": "1b220da85426c2fde5b2eead9c7ec00c3ebc14c95486133fbd5a50711cab78ec"
+    },
+    {
+      "step": 1,
+      "tool": "planned_evidence",
+      "sql": "SELECT loan_id, outcome, reason_code, amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id, score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "row_count": 1,
+      "note": "ev_application (application)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 2,
+      "tool": "planned_evidence",
+      "sql": "SELECT utilisation, score AS bureau_score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1107'",
+      "row_count": 1,
+      "note": "ev_bureau (bureau)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 3,
+      "tool": "planned_evidence",
+      "sql": "SELECT COUNT(*) AS late_count FROM ( SELECT late_days FROM WHY_LEDGER_SYN.payments WHERE loan_id = 'LN-0500' ORDER BY due_date DESC LIMIT 6) t WHERE CAST(late_days AS INT) > 15",
+      "row_count": 1,
+      "note": "ev_payment_conduct (payment_conduct)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 4,
+      "tool": "planned_evidence",
+      "sql": "SELECT rule_id, feature, points, text FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id IN ('R06', 'R07', 'R16', 'R18', 'R21')",
+      "row_count": 5,
+      "note": "ev_scorecard_drivers (scorecard_drivers)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 5,
+      "tool": "planned_evidence",
+      "sql": "SELECT doc_id, section, substr(text, 1, 200) AS excerpt FROM WHY_LEDGER_SYN.policy_docs WHERE text LIKE '%price for bureau defaults%' OR section LIKE '%price for bureau defaults%' LIMIT 5",
+      "row_count": 0,
+      "note": "ev_policy_lookup (policy_lookup)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 6,
+      "tool": "planned_evidence",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score AS scorecard_points, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1107' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "row_count": 5,
+      "note": "ev_peer_cases (peer_cases)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 7,
+      "tool": "draft_claims",
+      "sql": null,
+      "row_count": 5,
+      "note": "drafted claims",
+      "intent": null,
+      "routing_hash": null,
+      "provider": "meterless-nightshift",
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b"
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "text": "outcome is approve",
+      "values": {
+        "outcome": "approve"
+      },
+      "query_ids": [
+        "a494c241-4a24-4812-b824-c6d1b8a493a1",
+        "fe049f8c-c3b5-460e-a35d-ce70b3751f13"
+      ]
+    },
+    {
+      "id": "c2",
+      "text": "scorecard points is 169",
+      "values": {
+        "scorecard_points": 169.0
+      },
+      "query_ids": [
+        "a494c241-4a24-4812-b824-c6d1b8a493a1",
+        "20c9bb65-a31c-4a37-839c-0f002939e558"
+      ]
+    },
+    {
+      "id": "c3",
+      "text": "bureau score is 700",
+      "values": {
+        "bureau_score": 700
+      },
+      "query_ids": [
+        "7a7bd236-f0cd-47b3-ab1c-fd0bcf035db9",
+        "de6c502d-820e-4f5c-8593-451f1055ec16"
+      ]
+    },
+    {
+      "id": "c4",
+      "text": "utilisation is 40",
+      "values": {
+        "utilisation": 40
+      },
+      "query_ids": [
+        "7a7bd236-f0cd-47b3-ab1c-fd0bcf035db9",
+        "48441a3b-611e-44d9-86e2-b8aad0869bf1"
+      ]
+    },
+    {
+      "id": "c5",
+      "text": "reason code is PRICE_FOR_BUREAU_DEFAULTS",
+      "values": {
+        "reason_code": "PRICE_FOR_BUREAU_DEFAULTS"
+      },
+      "query_ids": [
+        "a494c241-4a24-4812-b824-c6d1b8a493a1",
+        "57ecf51f-10e5-49d9-9b55-2845429b9ded"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "query_id": "a494c241-4a24-4812-b824-c6d1b8a493a1",
+      "sql": "SELECT loan_id, outcome, reason_code, amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id, score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "reason_code",
+        "amount",
+        "term",
+        "sector",
+        "years_in_business",
+        "declared_income",
+        "prior_loans",
+        "prior_loan_id",
+        "applicant_id",
+        "scorecard_points"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-1107",
+          "outcome": "approve",
+          "reason_code": "PRICE_FOR_BUREAU_DEFAULTS",
+          "amount": 80000.0,
+          "term": 24,
+          "sector": "retail",
+          "years_in_business": 5.0,
+          "declared_income": 88000.0,
+          "prior_loans": 1,
+          "prior_loan_id": "LN-0500",
+          "applicant_id": "AP-1107",
+          "scorecard_points": 169.0
+        }
+      ],
+      "sha256": "cd2114d031d29ef56d0139f424d49fe610d8a7d58707eac7792f12ae0f42457c"
+    },
+    {
+      "query_id": "7a7bd236-f0cd-47b3-ab1c-fd0bcf035db9",
+      "sql": "SELECT utilisation, score AS bureau_score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1107'",
+      "columns": [
+        "utilisation",
+        "bureau_score",
+        "enquiries_6m",
+        "defaults"
+      ],
+      "rows": [
+        {
+          "utilisation": 40,
+          "bureau_score": 700,
+          "enquiries_6m": 1,
+          "defaults": 2
+        }
+      ],
+      "sha256": "93da3dab5d95bd0786048eaf9c26b37745dbee0f59c21317cb25279fef2a5b8c"
+    },
+    {
+      "query_id": "51d6b52d-91af-40de-8888-6161478364fb",
+      "sql": "SELECT COUNT(*) AS late_count FROM ( SELECT late_days FROM WHY_LEDGER_SYN.payments WHERE loan_id = 'LN-0500' ORDER BY due_date DESC LIMIT 6) t WHERE CAST(late_days AS INT) > 15",
+      "columns": [
+        "late_count"
+      ],
+      "rows": [
+        {
+          "late_count": 0
+        }
+      ],
+      "sha256": "66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65"
+    },
+    {
+      "query_id": "87c73fc7-e8c5-48af-8987-d7f41c3c5f0c",
+      "sql": "SELECT rule_id, feature, points, text FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id IN ('R06', 'R07', 'R16', 'R18', 'R21')",
+      "columns": [
+        "rule_id",
+        "feature",
+        "points",
+        "text"
+      ],
+      "rows": [
+        {
+          "rule_id": "R06",
+          "feature": "defaults",
+          "points": -30,
+          "text": "Two or more bureau defaults on file"
+        },
+        {
+          "rule_id": "R07",
+          "feature": "defaults",
+          "points": -18,
+          "text": "One or more bureau defaults on file"
+        },
+        {
+          "rule_id": "R16",
+          "feature": "years_in_business",
+          "points": 8,
+          "text": "Business operating five years or more"
+        },
+        {
+          "rule_id": "R18",
+          "feature": "term",
+          "points": 5,
+          "text": "Requested term 24 months or shorter"
+        },
+        {
+          "rule_id": "R21",
+          "feature": "prior_loans",
+          "points": 4,
+          "text": "Repeat Harbor Credit borrower"
+        }
+      ],
+      "sha256": "3af112da42e2663d600b1e3c1e36749a0de239d982cde7e1d37dda48c3f4a69e"
+    },
+    {
+      "query_id": "58394080-434a-4044-9a8b-005992e308bb",
+      "sql": "SELECT doc_id, section, substr(text, 1, 200) AS excerpt FROM WHY_LEDGER_SYN.policy_docs WHERE text LIKE '%price for bureau defaults%' OR section LIKE '%price for bureau defaults%' LIMIT 5",
+      "columns": [
+        "doc_id",
+        "section",
+        "excerpt"
+      ],
+      "rows": [],
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "query_id": "382f62e7-9d21-4fb1-8e3f-e71005269a96",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score AS scorecard_points, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1107' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "scorecard_points",
+        "amount"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-0189",
+          "outcome": "approve",
+          "scorecard_points": 169.0,
+          "amount": 85000.0
+        },
+        {
+          "loan_id": "LN-0346",
+          "outcome": "approve",
+          "scorecard_points": 169.0,
+          "amount": 280000.0
+        },
+        {
+          "loan_id": "LN-0215",
+          "outcome": "approve",
+          "scorecard_points": 169.0,
+          "amount": 200000.0
+        },
+        {
+          "loan_id": "LN-0166",
+          "outcome": "approve",
+          "scorecard_points": 169.0,
+          "amount": 200000.0
+        },
+        {
+          "loan_id": "LN-0232",
+          "outcome": "approve",
+          "scorecard_points": 169.0,
+          "amount": 200000.0
+        }
+      ],
+      "sha256": "f1edb570810827c98ff9d58190a7d82b85546eb190545a2ca197785e19ec7e29"
+    },
+    {
+      "query_id": "fe049f8c-c3b5-460e-a35d-ce70b3751f13",
+      "sql": "SELECT outcome FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "outcome"
+      ],
+      "rows": [
+        {
+          "outcome": "approve"
+        }
+      ],
+      "sha256": "35b33522b39782b0b9f8c5cc89d6c2ecbc59dcf9a38a23f9b0e24bf2c6715499"
+    },
+    {
+      "query_id": "20c9bb65-a31c-4a37-839c-0f002939e558",
+      "sql": "SELECT score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "scorecard_points"
+      ],
+      "rows": [
+        {
+          "scorecard_points": 169.0
+        }
+      ],
+      "sha256": "3c1144f617b4e6351fff36a2ed2cc8112fc7f0815aee54d06c6e877db9b2a6dc"
+    },
+    {
+      "query_id": "de6c502d-820e-4f5c-8593-451f1055ec16",
+      "sql": "SELECT score AS bureau_score FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1107'",
+      "columns": [
+        "bureau_score"
+      ],
+      "rows": [
+        {
+          "bureau_score": 700
+        }
+      ],
+      "sha256": "29000139e0df8fd6ff0c99b89ff2113e0f3401f489f575273cdeb50361cd4b0b"
+    },
+    {
+      "query_id": "48441a3b-611e-44d9-86e2-b8aad0869bf1",
+      "sql": "SELECT utilisation FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1107'",
+      "columns": [
+        "utilisation"
+      ],
+      "rows": [
+        {
+          "utilisation": 40
+        }
+      ],
+      "sha256": "8a5316d46ca7f1d932bfbbc0e27eb0573670648db506f4b712e4db43662e3ee5"
+    },
+    {
+      "query_id": "57ecf51f-10e5-49d9-9b55-2845429b9ded",
+      "sql": "SELECT reason_code FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "reason_code"
+      ],
+      "rows": [
+        {
+          "reason_code": "PRICE_FOR_BUREAU_DEFAULTS"
+        }
+      ],
+      "sha256": "f4e8960d87d2f10170f2931e5a2956056948f4c8e6f69b99f11789d22e1f0b84"
+    },
+    {
+      "query_id": "4490e57d-0cae-4e60-b53f-b9afe7ed55d1",
+      "sql": "SELECT reason_code, declared_income, outcome FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+      "columns": [
+        "reason_code",
+        "declared_income",
+        "outcome"
+      ],
+      "rows": [
+        {
+          "reason_code": "PRICE_FOR_BUREAU_DEFAULTS",
+          "declared_income": 88000.0,
+          "outcome": "approve"
+        }
+      ],
+      "sha256": "35c35339a1189aa86409b80b7e16a6dc9e915bf6c1c02f529647fe234392131a"
+    },
+    {
+      "query_id": "40e3c9d1-3648-4727-87ce-ac789011bc53",
+      "sql": "SELECT rule_id, feature, operator, threshold, points FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id = 'R01'",
+      "columns": [
+        "rule_id",
+        "feature",
+        "operator",
+        "threshold",
+        "points"
+      ],
+      "rows": [
+        {
+          "rule_id": "R01",
+          "feature": "declared_income",
+          "operator": "<",
+          "threshold": 40000.0,
+          "points": -35
+        }
+      ],
+      "sha256": "78928a9b601395a33939baa87dafcdeccd96e35c43965757510106ad88f6180e"
+    }
+  ],
+  "card": {
+    "decision": "approve",
+    "mode": "live",
+    "drivers": [
+      {
+        "rank": 1,
+        "feature": "defaults",
+        "weight_pct": 73.8,
+        "claim_id": "c5"
+      },
+      {
+        "rank": 2,
+        "feature": "years_in_business",
+        "weight_pct": 12.3,
+        "claim_id": null
+      },
+      {
+        "rank": 3,
+        "feature": "term",
+        "weight_pct": 7.7,
+        "claim_id": null
+      },
+      {
+        "rank": 4,
+        "feature": "prior_loans",
+        "weight_pct": 6.2,
+        "claim_id": null
+      }
+    ],
+    "claims": [
+      {
+        "id": "c1",
+        "text": "outcome is approve",
+        "status": "VERIFIED",
+        "query_ids": [
+          "a494c241-4a24-4812-b824-c6d1b8a493a1",
+          "fe049f8c-c3b5-460e-a35d-ce70b3751f13"
+        ],
+        "row_hash": "cd2114d031d29ef56d0139f424d49fe610d8a7d58707eac7792f12ae0f42457c,35b33522b39782b0b9f8c5cc89d6c2ecbc59dcf9a38a23f9b0e24bf2c6715499"
+      },
+      {
+        "id": "c2",
+        "text": "scorecard points is 169",
+        "status": "VERIFIED",
+        "query_ids": [
+          "a494c241-4a24-4812-b824-c6d1b8a493a1",
+          "20c9bb65-a31c-4a37-839c-0f002939e558"
+        ],
+        "row_hash": "cd2114d031d29ef56d0139f424d49fe610d8a7d58707eac7792f12ae0f42457c,3c1144f617b4e6351fff36a2ed2cc8112fc7f0815aee54d06c6e877db9b2a6dc"
+      },
+      {
+        "id": "c3",
+        "text": "bureau score is 700",
+        "status": "VERIFIED",
+        "query_ids": [
+          "7a7bd236-f0cd-47b3-ab1c-fd0bcf035db9",
+          "de6c502d-820e-4f5c-8593-451f1055ec16"
+        ],
+        "row_hash": "93da3dab5d95bd0786048eaf9c26b37745dbee0f59c21317cb25279fef2a5b8c,29000139e0df8fd6ff0c99b89ff2113e0f3401f489f575273cdeb50361cd4b0b"
+      },
+      {
+        "id": "c4",
+        "text": "utilisation is 40",
+        "status": "VERIFIED",
+        "query_ids": [
+          "7a7bd236-f0cd-47b3-ab1c-fd0bcf035db9",
+          "48441a3b-611e-44d9-86e2-b8aad0869bf1"
+        ],
+        "row_hash": "93da3dab5d95bd0786048eaf9c26b37745dbee0f59c21317cb25279fef2a5b8c,8a5316d46ca7f1d932bfbbc0e27eb0573670648db506f4b712e4db43662e3ee5"
+      },
+      {
+        "id": "c5",
+        "text": "reason code is PRICE_FOR_BUREAU_DEFAULTS",
+        "status": "VERIFIED",
+        "query_ids": [
+          "a494c241-4a24-4812-b824-c6d1b8a493a1",
+          "57ecf51f-10e5-49d9-9b55-2845429b9ded"
+        ],
+        "row_hash": "cd2114d031d29ef56d0139f424d49fe610d8a7d58707eac7792f12ae0f42457c,f4e8960d87d2f10170f2931e5a2956056948f4c8e6f69b99f11789d22e1f0b84"
+      }
+    ],
+    "rejected": [],
+    "counterfactual": null,
+    "reason_check": {
+      "status": "CONSISTENT",
+      "headline": "Recorded reason consistent with data",
+      "recorded_reason_code": "PRICE_FOR_BUREAU_DEFAULTS",
+      "detail": "The record says PRICE_FOR_BUREAU_DEFAULTS; the data shows bureau defaults 2.0 (rule R06).",
+      "evidence": [
+        {
+          "query_id": "4490e57d-0cae-4e60-b53f-b9afe7ed55d1",
+          "sql": "SELECT reason_code, declared_income, outcome FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1107'",
+          "rows": [
+            {
+              "reason_code": "PRICE_FOR_BUREAU_DEFAULTS",
+              "declared_income": 88000.0,
+              "outcome": "approve"
+            }
+          ],
+          "sha256": "35c35339a1189aa86409b80b7e16a6dc9e915bf6c1c02f529647fe234392131a"
+        },
+        {
+          "query_id": "40e3c9d1-3648-4727-87ce-ac789011bc53",
+          "sql": "SELECT rule_id, feature, operator, threshold, points FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id = 'R01'",
+          "rows": [
+            {
+              "rule_id": "R01",
+              "feature": "declared_income",
+              "operator": "<",
+              "threshold": 40000.0,
+              "points": -35
+            }
+          ],
+          "sha256": "78928a9b601395a33939baa87dafcdeccd96e35c43965757510106ad88f6180e"
+        }
+      ]
+    },
+    "applicant_letter": "Illustrative explanation, not legal advice. SYNTHETIC demo data.\n\nRegarding application LN-1107.\nThe recorded decision is: approve.\n\nMain factors in the decision:\n- Bureau defaults (73.8% of scorecard driver weight): 2 bureau defaults on file [E1]\n- Years in business (12.3% of scorecard driver weight): years in business is 5 [E2]\n\nEvidence: E1: 2 bureau defaults on file; E2: years in business is 5.\n\nThis notice summarises values re-checked against linked query results. It is not advice and not a commitment about future applications.",
+    "verified_at": "2026-10-25T17:06:53.395679+00:00",
+    "model": "Meterless Nightshift (nvidia/nemotron-3.5-lightning-30b-a3b)",
+    "synthetic": true
+  },
+  "verification": [
+    {
+      "claim_id": "c1",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows"
+    },
+    {
+      "claim_id": "c2",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows"
+    },
+    {
+      "claim_id": "c3",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows"
+    },
+    {
+      "claim_id": "c4",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows"
+    },
+    {
+      "claim_id": "c5",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values match named columns in re-run rows"
+    }
+  ],
+  "latency_ms": 6714.09
+}

@@ -1,0 +1,750 @@
+{
+  "version": 1,
+  "loan_id": "LN-1230",
+  "is_synthetic": true,
+  "recorded_at": "2026-10-23T14:59:13.292227+00:00",
+  "backends": {
+    "zetaris": "ZETARIS-JDBC",
+    "model": "Nemotron via integrate.api.nvidia.com (nvidia/nemotron-3.5-lightning-30b-a3b)",
+    "live_agent_mode": "planned"
+  },
+  "trace": [
+    {
+      "step": 0,
+      "tool": "scout_intent",
+      "sql": null,
+      "row_count": null,
+      "note": "intent=explain_decision confidence=1.00 band=high risk=low tools=['sql', 'policy_lookup']",
+      "intent": "explain_decision",
+      "routing_hash": "1b220da85426c2fde5b2eead9c7ec00c3ebc14c95486133fbd5a50711cab78ec"
+    },
+    {
+      "step": 1,
+      "tool": "planned_evidence",
+      "sql": "SELECT loan_id, outcome, reason_code, amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id, score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1230'",
+      "row_count": 1,
+      "note": "ev_application (application)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 2,
+      "tool": "planned_evidence",
+      "sql": "SELECT utilisation, score AS bureau_score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1230'",
+      "row_count": 1,
+      "note": "ev_bureau (bureau)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 3,
+      "tool": "planned_evidence",
+      "sql": "SELECT 0 AS late_count FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1230' LIMIT 1",
+      "row_count": 1,
+      "note": "ev_payment_conduct (payment_conduct)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 4,
+      "tool": "planned_evidence",
+      "sql": "SELECT rule_id, feature, points, text FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id IN ('R08', 'R03', 'R11', 'R20', 'R23')",
+      "row_count": 5,
+      "note": "ev_scorecard_drivers (scorecard_drivers)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 5,
+      "tool": "planned_evidence",
+      "sql": "SELECT doc_id, section, substr(text, 1, 200) AS excerpt FROM WHY_LEDGER_SYN.policy_docs WHERE text LIKE '%decline borderline%' OR section LIKE '%decline borderline%' LIMIT 5",
+      "row_count": 0,
+      "note": "ev_policy_lookup (policy_lookup)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 6,
+      "tool": "planned_evidence",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score AS scorecard_points, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1230' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "row_count": 5,
+      "note": "ev_peer_cases (peer_cases)",
+      "intent": null,
+      "routing_hash": null
+    },
+    {
+      "step": 7,
+      "tool": "draft_claims",
+      "sql": null,
+      "row_count": 6,
+      "note": "drafted claims",
+      "intent": null,
+      "routing_hash": null
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "text": "outcome is decline with reason code DECLINE_BORDERLINE",
+      "values": {
+        "outcome": "decline",
+        "reason_code": "DECLINE_BORDERLINE"
+      },
+      "query_ids": [
+        "0ff80c4f-20a2-46d6-8083-aa247e28455f",
+        "0ff80c4f-20a2-46d6-8083-aa247e28455f"
+      ]
+    },
+    {
+      "id": "c2",
+      "text": "bureau score is 640 and utilisation is 72 percent",
+      "values": {
+        "bureau_score": 640,
+        "utilisation": 72
+      },
+      "query_ids": [
+        "1c1335ef-1837-4a94-b478-2d1ce335a06f",
+        "1c1335ef-1837-4a94-b478-2d1ce335a06f"
+      ]
+    },
+    {
+      "id": "c3",
+      "text": "late payment count is 0",
+      "values": {
+        "late_count": 0
+      },
+      "query_ids": [
+        "c190dace-7d86-492c-b80b-18b1f5ff03f3",
+        "c190dace-7d86-492c-b80b-18b1f5ff03f3"
+      ]
+    },
+    {
+      "id": "c4",
+      "text": "scorecard drivers per policy_rules: R03 Credit utilisation at or above 70 percent -15 points, R08 Requested amount exceeds 2.5 times declared income -30 points, R11 Bureau score below preferred band -15 points, R20 Amount exceeds two times declared annual income -8 points, R23 Lower-risk sector classification +5 points",
+      "values": {
+        "R03_text": "Credit utilisation at or above 70 percent",
+        "R03_points": -15,
+        "R08_text": "Requested amount exceeds 2.5 times declared income",
+        "R08_points": -30,
+        "R11_text": "Bureau score below preferred band",
+        "R11_points": -15,
+        "R20_text": "Amount exceeds two times declared annual income",
+        "R20_points": -8,
+        "R23_text": "Lower-risk sector classification",
+        "R23_points": 5
+      },
+      "query_ids": [
+        "70d6b80d-fbd5-47b1-8955-3474b15e58ca",
+        "70d6b80d-fbd5-47b1-8955-3474b15e58ca"
+      ]
+    },
+    {
+      "id": "c5",
+      "text": "peer declined loan LN-0536 has outcome decline and scorecard points 137.0",
+      "values": {
+        "peer_loan_id": "LN-0536",
+        "outcome": "decline",
+        "scorecard_points": 137.0
+      },
+      "query_ids": [
+        "534f1611-1068-4567-a879-67126e2057a8",
+        "534f1611-1068-4567-a879-67126e2057a8"
+      ]
+    },
+    {
+      "id": "c6",
+      "text": "scorecard points total is 137.0",
+      "values": {
+        "scorecard_points": 137.0
+      },
+      "query_ids": [
+        "0ff80c4f-20a2-46d6-8083-aa247e28455f",
+        "0ff80c4f-20a2-46d6-8083-aa247e28455f"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "query_id": "0ff80c4f-20a2-46d6-8083-aa247e28455f",
+      "sql": "SELECT loan_id, outcome, reason_code, amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id, score AS scorecard_points FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1230'",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "reason_code",
+        "amount",
+        "term",
+        "sector",
+        "years_in_business",
+        "declared_income",
+        "prior_loans",
+        "prior_loan_id",
+        "applicant_id",
+        "scorecard_points"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-1230",
+          "outcome": "decline",
+          "reason_code": "DECLINE_BORDERLINE",
+          "amount": 110000.0,
+          "term": 36,
+          "sector": "technology",
+          "years_in_business": 3.0,
+          "declared_income": 42000.0,
+          "prior_loans": 0,
+          "prior_loan_id": null,
+          "applicant_id": "AP-1230",
+          "scorecard_points": 137.0
+        }
+      ],
+      "sha256": "d562cd9c958e66e1c6d4dcf09aed30bfe62c88391c57449f2bbf227df4f1912d"
+    },
+    {
+      "query_id": "1c1335ef-1837-4a94-b478-2d1ce335a06f",
+      "sql": "SELECT utilisation, score AS bureau_score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1230'",
+      "columns": [
+        "utilisation",
+        "bureau_score",
+        "enquiries_6m",
+        "defaults"
+      ],
+      "rows": [
+        {
+          "utilisation": 72,
+          "bureau_score": 640,
+          "enquiries_6m": 2,
+          "defaults": 0
+        }
+      ],
+      "sha256": "5450063c2aeea71390f18ff8543554672729ecb833385901a145ecfb5d9a644e"
+    },
+    {
+      "query_id": "c190dace-7d86-492c-b80b-18b1f5ff03f3",
+      "sql": "SELECT 0 AS late_count FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1230' LIMIT 1",
+      "columns": [
+        "late_count"
+      ],
+      "rows": [
+        {
+          "late_count": 0
+        }
+      ],
+      "sha256": "66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65"
+    },
+    {
+      "query_id": "70d6b80d-fbd5-47b1-8955-3474b15e58ca",
+      "sql": "SELECT rule_id, feature, points, text FROM WHY_LEDGER_SYN.policy_rules WHERE rule_id IN ('R08', 'R03', 'R11', 'R20', 'R23')",
+      "columns": [
+        "rule_id",
+        "feature",
+        "points",
+        "text"
+      ],
+      "rows": [
+        {
+          "rule_id": "R03",
+          "feature": "utilisation",
+          "points": -15,
+          "text": "Credit utilisation at or above 70 percent"
+        },
+        {
+          "rule_id": "R08",
+          "feature": "amount_to_income",
+          "points": -30,
+          "text": "Requested amount exceeds 2.5 times declared income (debt-service pressure)"
+        },
+        {
+          "rule_id": "R11",
+          "feature": "bureau_score",
+          "points": -15,
+          "text": "Bureau score below preferred band"
+        },
+        {
+          "rule_id": "R20",
+          "feature": "amount_to_income",
+          "points": -8,
+          "text": "Amount exceeds two times declared annual income"
+        },
+        {
+          "rule_id": "R23",
+          "feature": "sector_risk",
+          "points": 5,
+          "text": "Lower-risk sector classification"
+        }
+      ],
+      "sha256": "2b929814fd2f61ef8fad05af454b6467f3665ae469ad40c128ac18cc2199fb24"
+    },
+    {
+      "query_id": "3d228a5c-2894-4ee9-b384-0c4b34c8138d",
+      "sql": "SELECT doc_id, section, substr(text, 1, 200) AS excerpt FROM WHY_LEDGER_SYN.policy_docs WHERE text LIKE '%decline borderline%' OR section LIKE '%decline borderline%' LIMIT 5",
+      "columns": [
+        "doc_id",
+        "section",
+        "excerpt"
+      ],
+      "rows": [],
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "query_id": "534f1611-1068-4567-a879-67126e2057a8",
+      "sql": "SELECT a2.loan_id, a2.outcome, a2.score AS scorecard_points, a2.amount FROM WHY_LEDGER_SYN.applications a1 JOIN WHY_LEDGER_SYN.applications a2 ON a1.outcome = a2.outcome AND a2.loan_id != a1.loan_id WHERE a1.loan_id = 'LN-1230' ORDER BY ABS(CAST(a2.score AS DOUBLE) - CAST(a1.score AS DOUBLE)) LIMIT 5",
+      "columns": [
+        "loan_id",
+        "outcome",
+        "scorecard_points",
+        "amount"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-0536",
+          "outcome": "decline",
+          "scorecard_points": 137.0,
+          "amount": 85000.0
+        },
+        {
+          "loan_id": "LN-1110",
+          "outcome": "decline",
+          "scorecard_points": 137.0,
+          "amount": 40000.0
+        },
+        {
+          "loan_id": "LN-0662",
+          "outcome": "decline",
+          "scorecard_points": 137.0,
+          "amount": 200000.0
+        },
+        {
+          "loan_id": "LN-0327",
+          "outcome": "decline",
+          "scorecard_points": 137.0,
+          "amount": 100000.0
+        },
+        {
+          "loan_id": "LN-0837",
+          "outcome": "decline",
+          "scorecard_points": 137.0,
+          "amount": 200000.0
+        }
+      ],
+      "sha256": "a6450a248e5665caeadf8c16cf899dbbc5607bf4e882daa2b572473e1da9364f"
+    },
+    {
+      "query_id": "96ea4ac4-73e6-4b81-a67e-1b13c1475a27",
+      "sql": "SELECT amount, term, sector, years_in_business, declared_income, prior_loans, prior_loan_id, applicant_id FROM WHY_LEDGER_SYN.applications WHERE loan_id = 'LN-1230'",
+      "columns": [
+        "amount",
+        "term",
+        "sector",
+        "years_in_business",
+        "declared_income",
+        "prior_loans",
+        "prior_loan_id",
+        "applicant_id"
+      ],
+      "rows": [
+        {
+          "amount": 110000.0,
+          "term": 36,
+          "sector": "technology",
+          "years_in_business": 3.0,
+          "declared_income": 42000.0,
+          "prior_loans": 0,
+          "prior_loan_id": null,
+          "applicant_id": "AP-1230"
+        }
+      ],
+      "sha256": "41792ac24c7d4d0b2b7f2e32cfbfd57a8b18e60e534166cdf6866bfcc4ecd84d"
+    },
+    {
+      "query_id": "490a7555-ec5a-40ce-93b5-5ef8b8909aa5",
+      "sql": "SELECT utilisation, score, enquiries_6m, defaults FROM WHY_LEDGER_SYN.bureau WHERE applicant_id = 'AP-1230'",
+      "columns": [
+        "utilisation",
+        "score",
+        "enquiries_6m",
+        "defaults"
+      ],
+      "rows": [
+        {
+          "utilisation": 72,
+          "score": 640,
+          "enquiries_6m": 2,
+          "defaults": 0
+        }
+      ],
+      "sha256": "50aa9c7358f365873090224cdae3f4372696b4b0a263a9da1fe3424a825b4fce"
+    },
+    {
+      "query_id": "fcd86aa9-f160-405d-ae45-dd6b0e650743",
+      "sql": "SELECT rule_id, feature, operator, threshold, points, text FROM WHY_LEDGER_SYN.policy_rules ORDER BY rule_id",
+      "columns": [
+        "rule_id",
+        "feature",
+        "operator",
+        "threshold",
+        "points",
+        "text"
+      ],
+      "rows": [
+        {
+          "rule_id": "R01",
+          "feature": "declared_income",
+          "operator": "<",
+          "threshold": 40000.0,
+          "points": -35,
+          "text": "Declared income below Harbor Credit minimum self-employed threshold"
+        },
+        {
+          "rule_id": "R02",
+          "feature": "utilisation",
+          "operator": ">=",
+          "threshold": 90.0,
+          "points": -40,
+          "text": "Credit utilisation at or above 90 percent"
+        },
+        {
+          "rule_id": "R03",
+          "feature": "utilisation",
+          "operator": ">=",
+          "threshold": 70.0,
+          "points": -15,
+          "text": "Credit utilisation at or above 70 percent"
+        },
+        {
+          "rule_id": "R04",
+          "feature": "late_over_15_of_last_6",
+          "operator": ">=",
+          "threshold": 3.0,
+          "points": -45,
+          "text": "Three or more of last six payments late by over 15 days"
+        },
+        {
+          "rule_id": "R05",
+          "feature": "late_over_15_of_last_6",
+          "operator": ">=",
+          "threshold": 1.0,
+          "points": -12,
+          "text": "At least one of last six payments late by over 15 days"
+        },
+        {
+          "rule_id": "R06",
+          "feature": "defaults",
+          "operator": ">=",
+          "threshold": 2.0,
+          "points": -30,
+          "text": "Two or more bureau defaults on file"
+        },
+        {
+          "rule_id": "R07",
+          "feature": "defaults",
+          "operator": ">=",
+          "threshold": 1.0,
+          "points": -18,
+          "text": "One or more bureau defaults on file"
+        },
+        {
+          "rule_id": "R08",
+          "feature": "amount_to_income",
+          "operator": ">",
+          "threshold": 2.5,
+          "points": -30,
+          "text": "Requested amount exceeds 2.5 times declared income (debt-service pressure)"
+        },
+        {
+          "rule_id": "R09",
+          "feature": "amount",
+          "operator": ">",
+          "threshold": 250000.0,
+          "points": -20,
+          "text": "Requested amount above standard single-facility cap"
+        },
+        {
+          "rule_id": "R10",
+          "feature": "bureau_score",
+          "operator": "<",
+          "threshold": 580.0,
+          "points": -40,
+          "text": "Bureau score below Harbor Credit floor"
+        },
+        {
+          "rule_id": "R11",
+          "feature": "bureau_score",
+          "operator": "<",
+          "threshold": 650.0,
+          "points": -15,
+          "text": "Bureau score below preferred band"
+        },
+        {
+          "rule_id": "R12",
+          "feature": "bureau_score",
+          "operator": ">=",
+          "threshold": 750.0,
+          "points": 10,
+          "text": "Bureau score in strong band"
+        },
+        {
+          "rule_id": "R13",
+          "feature": "enquiries_6m",
+          "operator": ">=",
+          "threshold": 6.0,
+          "points": -25,
+          "text": "Six or more bureau enquiries in six months"
+        },
+        {
+          "rule_id": "R14",
+          "feature": "enquiries_6m",
+          "operator": ">=",
+          "threshold": 4.0,
+          "points": -10,
+          "text": "Four or more bureau enquiries in six months"
+        },
+        {
+          "rule_id": "R15",
+          "feature": "years_in_business",
+          "operator": "<",
+          "threshold": 2.0,
+          "points": -20,
+          "text": "Business operating less than two years"
+        },
+        {
+          "rule_id": "R16",
+          "feature": "years_in_business",
+          "operator": ">=",
+          "threshold": 5.0,
+          "points": 8,
+          "text": "Business operating five years or more"
+        },
+        {
+          "rule_id": "R17",
+          "feature": "term",
+          "operator": ">",
+          "threshold": 48.0,
+          "points": -10,
+          "text": "Requested term longer than 48 months"
+        },
+        {
+          "rule_id": "R18",
+          "feature": "term",
+          "operator": "<=",
+          "threshold": 24.0,
+          "points": 5,
+          "text": "Requested term 24 months or shorter"
+        },
+        {
+          "rule_id": "R19",
+          "feature": "amount_to_income",
+          "operator": ">",
+          "threshold": 3.0,
+          "points": -22,
+          "text": "Amount exceeds three times declared annual income"
+        },
+        {
+          "rule_id": "R20",
+          "feature": "amount_to_income",
+          "operator": ">",
+          "threshold": 2.0,
+          "points": -8,
+          "text": "Amount exceeds two times declared annual income"
+        },
+        {
+          "rule_id": "R21",
+          "feature": "prior_loans",
+          "operator": ">=",
+          "threshold": 1.0,
+          "points": 4,
+          "text": "Repeat Harbor Credit borrower"
+        },
+        {
+          "rule_id": "R22",
+          "feature": "sector_risk",
+          "operator": ">=",
+          "threshold": 2.0,
+          "points": -12,
+          "text": "Higher-risk sector classification"
+        },
+        {
+          "rule_id": "R23",
+          "feature": "sector_risk",
+          "operator": "==",
+          "threshold": 0.0,
+          "points": 5,
+          "text": "Lower-risk sector classification"
+        },
+        {
+          "rule_id": "R24",
+          "feature": "declared_income",
+          "operator": ">=",
+          "threshold": 100000.0,
+          "points": 6,
+          "text": "Declared income in strong band"
+        },
+        {
+          "rule_id": "R25",
+          "feature": "utilisation",
+          "operator": "<",
+          "threshold": 30.0,
+          "points": 5,
+          "text": "Credit utilisation below 30 percent"
+        }
+      ],
+      "sha256": "8106118e73550a648a829261dcf4403ebf7d5489dbcf7deb9edb8daf19c09a3b"
+    },
+    {
+      "query_id": "0da33c1b-8b58-43ac-96b0-5cd0f7bacf82",
+      "sql": "SELECT 'LN-1230' AS loan_id, 'reduce amount by 5%' AS change, 'approve' AS flips_to, 'amount' AS varied_feature, 110000.0 AS baseline_value, 104500.0 AS counterfactual_value",
+      "columns": [
+        "loan_id",
+        "change",
+        "flips_to",
+        "varied_feature",
+        "baseline_value",
+        "counterfactual_value"
+      ],
+      "rows": [
+        {
+          "loan_id": "LN-1230",
+          "change": "reduce amount by 5%",
+          "flips_to": "approve",
+          "varied_feature": "amount",
+          "baseline_value": 110000.0,
+          "counterfactual_value": 104500.0
+        }
+      ],
+      "sha256": "194ecdda4523e18c04cb75d0f8c8d187ccf0f9c3a956198f33a4fa3116c4bfa0"
+    }
+  ],
+  "card": {
+    "decision": "decline",
+    "mode": "live",
+    "drivers": [
+      {
+        "rank": 1,
+        "feature": "amount_to_income",
+        "weight_pct": 41.1,
+        "claim_id": null
+      },
+      {
+        "rank": 2,
+        "feature": "utilisation",
+        "weight_pct": 20.5,
+        "claim_id": "c2"
+      },
+      {
+        "rank": 3,
+        "feature": "bureau_score",
+        "weight_pct": 20.5,
+        "claim_id": "c2"
+      },
+      {
+        "rank": 4,
+        "feature": "amount_to_income",
+        "weight_pct": 11.0,
+        "claim_id": null
+      },
+      {
+        "rank": 5,
+        "feature": "sector_risk",
+        "weight_pct": 6.8,
+        "claim_id": null
+      }
+    ],
+    "claims": [
+      {
+        "id": "c1",
+        "text": "outcome is decline with reason code DECLINE_BORDERLINE",
+        "status": "VERIFIED",
+        "query_ids": [
+          "0ff80c4f-20a2-46d6-8083-aa247e28455f",
+          "0ff80c4f-20a2-46d6-8083-aa247e28455f"
+        ],
+        "row_hash": "d562cd9c958e66e1c6d4dcf09aed30bfe62c88391c57449f2bbf227df4f1912d,d562cd9c958e66e1c6d4dcf09aed30bfe62c88391c57449f2bbf227df4f1912d"
+      },
+      {
+        "id": "c2",
+        "text": "bureau score is 640 and utilisation is 72 percent",
+        "status": "VERIFIED",
+        "query_ids": [
+          "1c1335ef-1837-4a94-b478-2d1ce335a06f",
+          "1c1335ef-1837-4a94-b478-2d1ce335a06f"
+        ],
+        "row_hash": "5450063c2aeea71390f18ff8543554672729ecb833385901a145ecfb5d9a644e,5450063c2aeea71390f18ff8543554672729ecb833385901a145ecfb5d9a644e"
+      },
+      {
+        "id": "c3",
+        "text": "late payment count is 0",
+        "status": "VERIFIED",
+        "query_ids": [
+          "c190dace-7d86-492c-b80b-18b1f5ff03f3",
+          "c190dace-7d86-492c-b80b-18b1f5ff03f3"
+        ],
+        "row_hash": "66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65,66db7bb2d32e598bba284b3cce1b59a858eb41df6f61fa43942a67854091cb65"
+      },
+      {
+        "id": "c5",
+        "text": "peer declined loan LN-0536 has outcome decline and scorecard points 137.0",
+        "status": "VERIFIED",
+        "query_ids": [
+          "534f1611-1068-4567-a879-67126e2057a8",
+          "534f1611-1068-4567-a879-67126e2057a8"
+        ],
+        "row_hash": "a6450a248e5665caeadf8c16cf899dbbc5607bf4e882daa2b572473e1da9364f,a6450a248e5665caeadf8c16cf899dbbc5607bf4e882daa2b572473e1da9364f"
+      },
+      {
+        "id": "c6",
+        "text": "scorecard points total is 137.0",
+        "status": "VERIFIED",
+        "query_ids": [
+          "0ff80c4f-20a2-46d6-8083-aa247e28455f",
+          "0ff80c4f-20a2-46d6-8083-aa247e28455f"
+        ],
+        "row_hash": "d562cd9c958e66e1c6d4dcf09aed30bfe62c88391c57449f2bbf227df4f1912d,d562cd9c958e66e1c6d4dcf09aed30bfe62c88391c57449f2bbf227df4f1912d"
+      }
+    ],
+    "rejected": [
+      {
+        "text": "scorecard drivers per policy_rules: R03 Credit utilisation at or above 70 percent -15 points, R08 Requested amount exceeds 2.5 times declared income -30 points, R11 Bureau score below preferred band -15 points, R20 Amount exceeds two times declared annual income -8 points, R23 Lower-risk sector classification +5 points",
+        "reason": "asserted values not found in evidence rows: R08_text"
+      }
+    ],
+    "counterfactual": {
+      "change": "reduce amount by 5%",
+      "flips_to": "approve"
+    },
+    "applicant_letter": "Regarding application LN-1230 (SYNTHETIC demo data).\nThe recorded decision is: decline.\nFactors that supported this explanation:\n- outcome is decline with reason code DECLINE_BORDERLINE\n- bureau score is 640 and utilisation is 72 percent\n- late payment count is 0\n- peer declined loan LN-0536 has outcome decline and scorecard points 137.0\n- scorecard points total is 137.0\nThis summary reflects values re-checked against the linked query results. It is an explanation of the recorded decision for this SYNTHETIC case, not advice and not a commitment about future applications.",
+    "verified_at": "2026-10-23T14:59:11.800599+00:00",
+    "model": "Nemotron via integrate.api.nvidia.com (nvidia/nemotron-3.5-lightning-30b-a3b)",
+    "synthetic": true
+  },
+  "verification": [
+    {
+      "claim_id": "c1",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c2",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c3",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c4",
+      "status": "UNSUPPORTED",
+      "reason": "asserted values not found in evidence rows: R08_text"
+    },
+    {
+      "claim_id": "c5",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    },
+    {
+      "claim_id": "c6",
+      "status": "VERIFIED",
+      "reason": "hash matched and asserted values present in re-run rows"
+    }
+  ]
+}
